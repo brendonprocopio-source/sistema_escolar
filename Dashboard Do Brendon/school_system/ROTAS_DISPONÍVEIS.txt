@@ -1,0 +1,200 @@
+════════════════════════════════════════════════════════════════════════════════
+                    ROTAS DISPONÍVEIS DO SISTEMA v2.0
+════════════════════════════════════════════════════════════════════════════════
+
+BASE URL: http://localhost:5000
+
+════════════════════════════════════════════════════════════════════════════════
+AUTENTICAÇÃO
+════════════════════════════════════════════════════════════════════════════════
+
+GET  /login                          → Página de login
+POST /login                          → Submeter login
+GET  /logout                         → Sair do sistema
+GET  /cadastro                       → Página de cadastro de aluno
+POST /cadastro                       → Submeter novo cadastro
+GET  /                               → Redireciona para dashboard ou login
+
+
+════════════════════════════════════════════════════════════════════════════════
+DASHBOARD
+════════════════════════════════════════════════════════════════════════════════
+
+GET  /dashboard                      → Dashboard principal com gráficos e stats
+
+
+════════════════════════════════════════════════════════════════════════════════
+ALUNOS
+════════════════════════════════════════════════════════════════════════════════
+
+GET  /alunos                         → Listar todos os alunos
+GET  /aluno/novo                     → Formulário novo aluno
+POST /aluno/novo                     → Criar novo aluno
+GET  /aluno/novo/completo            → Formulário novo aluno com curso
+POST /aluno/novo/completo            → Criar aluno com matrícula e parcelas
+GET  /aluno/<id>                     → Detalhes do aluno
+
+
+════════════════════════════════════════════════════════════════════════════════
+TURMAS
+════════════════════════════════════════════════════════════════════════════════
+
+GET  /turmas                         → Listar todas as turmas
+GET  /turma/nova                     → Formulário nova turma
+POST /turma/nova                     → Criar nova turma
+
+
+════════════════════════════════════════════════════════════════════════════════
+FREQUÊNCIA E NOTAS
+════════════════════════════════════════════════════════════════════════════════
+
+GET  /turma/<id>/frequencia          → Formulário registrar frequência
+POST /turma/<id>/frequencia          → Salvar frequência
+GET  /turma/<id>/notas               → Formulário registrar notas
+POST /turma/<id>/notas               → Salvar notas
+
+
+════════════════════════════════════════════════════════════════════════════════
+MÓDULO PEDAGÓGICO
+════════════════════════════════════════════════════════════════════════════════
+
+GET  /pedagogico                     → Dashboard pedagógico
+GET  /pedagogico/turmas              → Listar turmas (pedagogia)
+GET  /pedagogico/salas               → Listar salas
+GET  /pedagogico/aluno/<id>          → Detalhes pedagógico do aluno
+POST /pedagogico/aluno/<id>/relatorio/novo         → Criar relatório
+POST /pedagogico/aluno/<id>/status/novo            → Alterar status
+
+
+════════════════════════════════════════════════════════════════════════════════
+MÓDULO COMERCIAL
+════════════════════════════════════════════════════════════════════════════════
+
+GET  /comercial                      → Dashboard comercial (KPIs)
+GET  /comercial/matricula/nova       → Formulário nova matrícula
+POST /comercial/matricula/nova       → Criar matrícula com parcelas
+GET  /comercial/matriculas           → Listar matrículas comerciais
+GET  /comercial/financeiro           → Listar financeiro (parcelas)
+GET  /comercial/parcelas/<id>        → Ver parcelas de um financeiro
+POST /comercial/parcela/<id>/pagar   → Registrar pagamento de parcela
+GET  /comercial/checkout/<id>        → Checkout de matrícula
+POST /comercial/checkout/<id>        → Confirmar checkout
+GET  /comercial/comprovante/<id>     → Gerar comprovante de pagamento
+GET  /comercial/boleto/<id>          → Gerar referência de boleto
+GET  /comercial/historico/<id>       → Histórico financeiro do aluno
+GET  /comercial/inadimplentes        → Relatório de inadimplentes
+
+
+════════════════════════════════════════════════════════════════════════════════
+ANEXOS (DOCUMENTOS E FOTOS)
+════════════════════════════════════════════════════════════════════════════════
+
+GET  /aluno/<id>/anexos              → Ver anexos do aluno
+POST /aluno/<id>/anexo/novo          → Upload de novo anexo
+
+
+════════════════════════════════════════════════════════════════════════════════
+RELATÓRIOS
+════════════════════════════════════════════════════════════════════════════════
+
+GET  /relatorios                     → Página de relatórios
+GET  /relatorio/turmas               → Relatório de turmas
+GET  /relatorio/frequencia           → Relatório de frequência
+GET  /relatorio/desempenho           → Relatório de desempenho (notas)
+GET  /relatorios/historico/<id>      → Histórico completo do aluno
+
+
+════════════════════════════════════════════════════════════════════════════════
+ADMIN - CURSOS
+════════════════════════════════════════════════════════════════════════════════
+
+GET  /admin/cursos                   → Listar cursos
+GET  /admin/curso/novo               → Formulário novo curso
+POST /admin/curso/novo               → Criar novo curso
+
+
+════════════════════════════════════════════════════════════════════════════════
+ADMIN - MÓDULOS
+════════════════════════════════════════════════════════════════════════════════
+
+GET  /admin/modulos                  → Listar módulos
+GET  /admin/modulo/novo              → Formulário novo módulo
+POST /admin/modulo/novo              → Criar novo módulo
+
+
+════════════════════════════════════════════════════════════════════════════════
+ADMIN - FUNCIONÁRIOS
+════════════════════════════════════════════════════════════════════════════════
+
+GET  /admin/funcionarios             → Listar funcionários
+GET  /admin/funcionario/novo         → Formulário novo funcionário
+POST /admin/funcionario/novo         → Criar novo funcionário
+
+
+════════════════════════════════════════════════════════════════════════════════
+ADMIN - SETORES
+════════════════════════════════════════════════════════════════════════════════
+
+GET  /admin/setores                  → Listar setores
+GET  /admin/setor/novo               → Formulário novo setor
+POST /admin/setor/novo               → Criar novo setor
+
+
+════════════════════════════════════════════════════════════════════════════════
+ADMIN - DASHBOARD
+════════════════════════════════════════════════════════════════════════════════
+
+GET  /admin                          → Dashboard administrativo
+
+
+════════════════════════════════════════════════════════════════════════════════
+                        ACESSO REQUERIDO POR ROTA
+════════════════════════════════════════════════════════════════════════════════
+
+Login requerido em:
+   /dashboard, /alunos, /turmas, /pedagogico, /comercial, /relatorios,
+   /admin/*
+
+Admin apenas:
+   /admin/*, controle total
+
+Funcionário:
+   /alunos, /turmas, /pedagogico, /comercial, /admin/cursos, /admin/modulos
+
+Professor:
+   /pedagogico, /turma/*/frequencia, /turma/*/notas
+
+Aluno:
+   /dashboard (visão limitada), /aluno/<seu_id>
+
+
+════════════════════════════════════════════════════════════════════════════════
+                        CREDENCIAIS PARA TESTAR
+════════════════════════════════════════════════════════════════════════════════
+
+Admin:
+   Email: admin@escola.com
+   Senha: Mudar@123
+
+Comercial:
+   Email: comercial@escola.com
+   Senha: Comercial@123
+
+Financeiro:
+   Email: financeiro@escola.com
+   Senha: Financeiro@123
+
+Pedagógico:
+   Email: pedagogico@escola.com
+   Senha: Pedagogico@123
+
+Professor (exemplo):
+   Email: ana@escola.com
+   Senha: Prof@123
+
+Aluno (exemplo):
+   Email: joao@escola.com
+   Senha: Aluno@123
+
+
+════════════════════════════════════════════════════════════════════════════════

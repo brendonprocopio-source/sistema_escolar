@@ -1,0 +1,282 @@
+╔════════════════════════════════════════════════════════════════════════════════╗
+║                                                                                ║
+║                   🚀 IMPLEMENTAÇÃO DO SISTEMA v2.0 - GUIA PASSO A PASSO       ║
+║                                                                                ║
+╚════════════════════════════════════════════════════════════════════════════════╝
+
+
+════════════════════════════════════════════════════════════════════════════════
+                     ⚠️ ANTES DE COMEÇAR: FAÇA BACKUP!
+════════════════════════════════════════════════════════════════════════════════
+
+SEU PROJETO ATUAL ESTÁ EM:
+   /tmp/school_system/
+
+FAÇA BACKUP IMEDIATAMENTE:
+   1. Copie para Desktop:
+      └─ tmp\school_system\ → C:\Users\brend\Desktop\school_system_v1_backup\
+   
+   2. Copie para Google Drive:
+      └─ Faça upload de school_system_backup.zip
+   
+   3. Copie para GitHub:
+      └─ git add . && git commit -m "v1.0 - Antes da atualização v2"
+
+⚠️ NÃO CONTINUEM SEM BACKUP!
+
+
+════════════════════════════════════════════════════════════════════════════════
+                        PASSO 1: PREPARAR AMBIENTE
+════════════════════════════════════════════════════════════════════════════════
+
+1. Abra terminal/PowerShell em: tmp\school_system\
+
+2. Parar container:
+   docker stop sistema_escola
+
+3. Verificar que o container parou:
+   docker ps
+
+   (não deve aparecer sistema_escola)
+
+
+════════════════════════════════════════════════════════════════════════════════
+                      PASSO 2: CRIAR NOVAS TABELAS
+════════════════════════════════════════════════════════════════════════════════
+
+1. Executar script de atualização do banco:
+   python database_v2.py
+
+2. Esperar mensagem:
+   "[OK] Banco de dados v2 criado com sucesso!"
+
+3. Verificar que o banco foi atualizado:
+   sqlite3 escola.db ".tables"
+
+   Deve aparecer novas tabelas como:
+   - status_aluno
+   - relatorios_aluno
+   - anexos
+   - audit_log
+   - parcelas
+   - salas
+   - cronograma
+   - etc
+
+
+════════════════════════════════════════════════════════════════════════════════
+                      PASSO 3: ATUALIZAR APLICAÇÃO
+════════════════════════════════════════════════════════════════════════════════
+
+1. Fazer backup do app antigo:
+   Renomear: app.py → app_v1_backup.py
+
+2. Renomear novo app:
+   Renomear: app_v2.py → app.py
+
+3. Copiar para container (IMPORTANTE!):
+   docker cp tmp\school_system\app.py sistema_escola:/app/
+
+
+════════════════════════════════════════════════════════════════════════════════
+                    PASSO 4: ATUALIZAR TEMPLATES
+════════════════════════════════════════════════════════════════════════════════
+
+Os novos templates estão em:
+   templates/dashboard_v2.html
+   templates/pedagogico/
+   templates/comercial/
+   templates/relatorios/
+
+Todos já foram criados e copiados para container automaticamente.
+
+
+════════════════════════════════════════════════════════════════════════════════
+                      PASSO 5: CRIAR PASTA DE UPLOADS
+════════════════════════════════════════════════════════════════════════════════
+
+Para anexos (fotos, documentos):
+
+1. Criar pasta:
+   mkdir uploads
+
+2. Copiar para container:
+   docker cp uploads sistema_escola:/app/
+
+
+════════════════════════════════════════════════════════════════════════════════
+                       PASSO 6: REINICIAR CONTAINER
+════════════════════════════════════════════════════════════════════════════════
+
+1. Iniciar container:
+   docker-compose up -d
+
+2. Verificar que iniciou:
+   docker ps
+
+   Deve aparecer: sistema_escola com status "Up"
+
+3. Verificar logs:
+   docker logs sistema_escola
+
+   Deve terminar com:
+   "Running on all addresses"
+
+
+════════════════════════════════════════════════════════════════════════════════
+                       PASSO 7: TESTAR SISTEMA v2
+════════════════════════════════════════════════════════════════════════════════
+
+1. Abra navegador:
+   http://localhost:5000/login
+
+2. Faça login:
+   Email: admin@escola.com
+   Senha: Mudar@123
+
+3. Clique no Dashboard:
+   Você deve ver:
+   - Gráfico de status dos alunos
+   - Cards com estatísticas
+   - Menu de departamentos visual
+
+4. Explore:
+   - Clique em "Pedagógico"
+   - Clique em "Comercial"
+   - Veja os novos menus
+
+
+════════════════════════════════════════════════════════════════════════════════
+                    PASSO 8: TESTAR FUNCIONALIDADES NOVAS
+════════════════════════════════════════════════════════════════════════════════
+
+PEDAGÓGICO:
+   1. Vá em Pedagógico
+   2. Clique em uma turma
+   3. Clique em um aluno
+   4. Você verá:
+      - Status do aluno
+      - Notas por módulo
+      - Frequência
+      - Relatórios anteriores
+   5. Adicione novo relatório
+   6. Altere status do aluno
+
+COMERCIAL:
+   1. Vá em Comercial
+   2. Clique "Nova Matrícula"
+   3. Selecione aluno e turma
+   4. Sistema calcula valor automaticamente
+   5. Escolha número de parcelas
+   6. Sistema cria parcelas automaticamente
+   7. Na aba Financeiro, registre pagamentos
+
+ANEXOS:
+   1. Vá em Alunos
+   2. Clique em um aluno
+   3. Clique em "Anexos"
+   4. Faça upload de foto/documento
+   5. Escolha tipo (foto, documento, contrato, etc)
+
+
+════════════════════════════════════════════════════════════════════════════════
+                         PASSO 9: VALIDAR TUDO
+════════════════════════════════════════════════════════════════════════════════
+
+✓ Login funciona
+✓ Dashboard mostra gráficos
+✓ Pedagogico mostra dados
+✓ Comercial cria matrículas
+✓ Parcelas são criadas automaticamente
+✓ Pagamentos são registrados
+✓ Anexos fazem upload
+✓ Relatórios são salvos
+✓ Status do aluno pode ser alterado
+✓ Auditoria registra tudo
+
+SE TUDO OK:
+   → Faça novo backup com v2
+   → Seu sistema está pronto!
+
+
+════════════════════════════════════════════════════════════════════════════════
+                       PASSO 10: BACKUP FINAL (IMPORTANTE!)
+════════════════════════════════════════════════════════════════════════════════
+
+1. Copie projeto atualizado:
+   tmp\school_system\ → C:\Users\brend\Desktop\school_system_v2_backup\
+
+2. Faça ZIP:
+   school_system_v2_backup → school_system_v2.zip
+
+3. Upload para Google Drive/GitHub com tag "v2.0"
+
+4. Anotação no sistema:
+   Sistema v2.0 implementado em: [data]
+   Novidades: Pedagógico, Comercial, Anexos, Auditoria, Parcelas
+
+
+════════════════════════════════════════════════════════════════════════════════
+                    ⚠️ SE ALGO DER ERRADO
+════════════════════════════════════════════════════════════════════════════════
+
+1. CONTAINER NÃO INICIA:
+   docker logs sistema_escola
+   
+   Se houver erro de import:
+   └─ Verifique se app.py foi copiado corretamente
+   └─ docker cp app.py sistema_escola:/app/
+
+2. BANCO NÃO ATUALIZA:
+   docker exec sistema_escola python database_v2.py
+   
+   Se der erro:
+   └─ Restaure escola.db do backup
+   └─ Execute script novamente
+
+3. TEMPLATES NÃO APARECEM:
+   Copie templates para container:
+   docker cp templates sistema_escola:/app/
+   
+   Reinicie:
+   docker restart sistema_escola
+
+4. VOLTA PARA v1:
+   Renomeie de volta: app_v1_backup.py → app.py
+   docker cp app.py sistema_escola:/app/
+   docker restart sistema_escola
+
+
+════════════════════════════════════════════════════════════════════════════════
+                      📋 CHECKLIST DE IMPLEMENTAÇÃO
+════════════════════════════════════════════════════════════════════════════════
+
+ANTES:
+□ Fiz backup completo (Desktop, Drive, GitHub)
+□ Parei o container
+
+DURANTE:
+□ Criei novas tabelas (database_v2.py)
+□ Atualizei aplicação (app_v2.py → app.py)
+□ Copiei templates novos
+□ Copiei pasta uploads
+□ Reiniciei container
+
+DEPOIS:
+□ Login funciona
+□ Dashboard mostra dados
+□ Pedagógico funciona
+□ Comercial funciona
+□ Anexos funcionam
+□ Auditoria registra
+□ Fiz novo backup
+□ Sistema v2.0 pronto!
+
+
+════════════════════════════════════════════════════════════════════════════════
+
+Tempo estimado: 30 minutos
+
+Quando pronto: seu sistema é PROFISSIONAL, completo e pronto para usar! 🎉
+
+════════════════════════════════════════════════════════════════════════════════

@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+
+{% block title %}Gerenciar Setores - Admin{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
+        <h1>Gerenciar Setores</h1>
+        <a href="/admin/setor/novo" style="text-decoration: none;"><button>+ Novo Setor</button></a>
+    </div>
+    
+    {% if setores %}
+        <table>
+            <thead>
+                <tr>
+                    <th>Nome</th>
+                    <th>Descricao</th>
+                    <th>Funcionarios</th>
+                    <th>Acoes</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for setor in setores %}
+                    <tr>
+                        <td>{{ setor.nome }}</td>
+                        <td>{{ setor.descricao or '-' }}</td>
+                        <td><span class="badge badge-primary">{{ setor.total_funcionarios }}</span></td>
+                        <td>
+                            <button class="btn-small">Editar</button>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>Nenhum setor cadastrado.</p>
+    {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+
+{% block title %}Gerenciar Funcionarios - Admin{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
+        <h1>Gerenciar Funcionarios</h1>
+        <a href="/admin/funcionario/novo" style="text-decoration: none;"><button>+ Novo Funcionario</button></a>
+    </div>
+    
+    {% if funcionarios %}
+        <table>
+            <thead>
+                <tr>
+                    <th>Nome</th>
+                    <th>Email</th>
+                    <th>Cargo</th>
+                    <th>Setor</th>
+                    <th>Salario</th>
+                    <th>Acoes</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for func in funcionarios %}
+                    <tr>
+                        <td>{{ func.nome }}</td>
+                        <td>{{ func.email }}</td>
+                        <td>{{ func.cargo }}</td>
+                        <td>{{ func.setor_nome or '-' }}</td>
+                        <td>R$ {{ "%.2f"|format(func.salario or 0) }}</td>
+                        <td>
+                            <a href="/admin/funcionario/{{ func.id }}/editar" style="text-decoration: none;"><button class="btn-small">Editar</button></a>
+                            <button class="btn-small" onclick="if(confirm('Tem certeza?')) window.location.href='/admin/funcionario/{{ func.id }}/deletar'">Deletar</button>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>Nenhum funcionario cadastrado.</p>
+    {% endif %}
+</div>
+{% endblock %}

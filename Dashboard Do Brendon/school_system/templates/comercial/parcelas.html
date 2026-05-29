@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+
+{% block title %}Parcelas - Financeiro{% endblock %}
+
+{% block content %}
+<div class="card">
+    <h1>Parcelas</h1>
+    
+    <div style="margin-bottom: 30px; padding: 20px; background: #f9f9f9; border-radius: 5px;">
+        <h3>Resumo:</h3>
+        <p><strong>Valor Total:</strong> R$ {{ "%.2f"|format(financeiro.valor_total) }}</p>
+        <p><strong>Valor Pago:</strong> R$ {{ "%.2f"|format(financeiro.valor_pago or 0) }}</p>
+        <p><strong>Pendente:</strong> R$ {{ "%.2f"|format(financeiro.valor_total - (financeiro.valor_pago or 0)) }}</p>
+        <p><strong>Total de Parcelas:</strong> {{ financeiro.parcelas }}</p>
+    </div>
+    
+    {% if parcelas %}
+        <table style="width: 100%; border-collapse: collapse;">
+            <thead>
+                <tr style="background: #f5f5f5;">
+                    <th style="padding: 15px; text-align: left; border: 1px solid #ddd;">Parcela</th>
+                    <th style="padding: 15px; text-align: right; border: 1px solid #ddd;">Valor</th>
+                    <th style="padding: 15px; text-align: left; border: 1px solid #ddd;">Vencimento</th>
+                    <th style="padding: 15px; text-align: left; border: 1px solid #ddd;">Pagamento</th>
+                    <th style="padding: 15px; text-align: left; border: 1px solid #ddd;">Status</th>
+                    <th style="padding: 15px; text-align: left; border: 1px solid #ddd;">Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for parcela in parcelas %}
+                    <tr style="border: 1px solid #ddd;">
+                        <td style="padding: 15px;"><strong>{{ parcela.numero_parcela }}</strong></td>
+                        <td style="padding: 15px; text-align: right;">R$ {{ "%.2f"|format(parcela.valor_parcela) }}</td>
+                        <td style="padding: 15px;">{{ parcela.data_vencimento }}</td>
+                        <td style="padding: 15px;">
+                            {% if parcela.data_pagamento %}
+                                {{ parcela.data_pagamento }}
+                            {% else %}
+                                -
+                            {% endif %}
+                        </td>
+                        <td style="padding: 15px;">
+                            {% if parcela.status == 'pago' %}
+                                <span style="background: #28a745; color: white; padding: 5px 10px; border-radius: 3px;">✓ Pago</span>
+                            {% else %}
+                                <span style="background: #ffc107; color: white; padding: 5px 10px; border-radius: 3px;">Pendente</span>
+                            {% endif %}
+                        </td>
+                        <td style="padding: 15px;">
+                            {% if parcela.status != 'pago' %}
+                                <form method="POST" action="/comercial/parcela/{{ parcela.id }}/pagar" style="display: inline;">
+                                    <select name="metodo_pagamento" style="padding: 5px; border: 1px solid #ddd; border-radius: 3px;">
+                                        <option value="dinheiro">Dinheiro</option>
+                                        <option value="cartao">Cartão</option>
+                                        <option value="cheque">Cheque</option>
+                                        <option value="pix">PIX</option>
+                                        <option value="boleto">Boleto</option>
+                                    </select>
+                                    <button type="submit" style="background: #28a745; color: white; padding: 5px 10px; border: none; border-radius: 3px; cursor: pointer; margin-left: 5px;">
+                                        Registrar Pag.
+                                    </button>
+                                </form>
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>Nenhuma parcela encontrada.</p>
+    {% endif %}
+</div>
+{% endblock %}

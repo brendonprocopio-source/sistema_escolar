@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+
+{% block title %}Turmas - Sistema de Gestão Escolar{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
+        <h1>Gerenciar Turmas</h1>
+        <a href="/turma/nova" style="text-decoration: none;"><button>+ Nova Turma</button></a>
+    </div>
+    
+    {% if turmas %}
+        <table>
+            <thead>
+                <tr>
+                    <th>Código</th>
+                    <th>Nome</th>
+                    <th>Curso</th>
+                    <th>Professor</th>
+                    <th>Alunos</th>
+                    <th>Horário</th>
+                    <th>Sala</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for turma in turmas %}
+                    <tr>
+                        <td>{{ turma.codigo }}</td>
+                        <td>{{ turma.nome }}</td>
+                        <td>{{ turma.curso_nome }}</td>
+                        <td>{{ turma.professor_nome }}</td>
+                        <td><span class="badge badge-primary">{{ turma.total_alunos }}</span></td>
+                        <td>{{ turma.horario }}</td>
+                        <td>{{ turma.sala }}</td>
+                        <td>
+                            <button class="btn-small">✏️ Editar</button>
+                            <button class="btn-small" onclick="if(confirm('Tem certeza?')) window.location.href='/turma/{{ turma.id }}/deletar'">🗑️ Deletar</button>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>Nenhuma turma cadastrada. <a href="/turma/nova">Criar nova turma</a></p>
+    {% endif %}
+</div>
+{% endblock %}

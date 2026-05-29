@@ -1,0 +1,117 @@
+{% extends "base.html" %}
+
+{% block title %}Detalhes do Aluno - Pedagógico{% endblock %}
+
+{% block content %}
+<div class="card">
+    <h1>{{ aluno.nome }} - Detalhes Pedagógicos</h1>
+    
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-bottom: 30px;">
+        <div style="padding: 15px; background: #f9f9f9; border-radius: 5px;">
+            <p style="margin: 0; color: #666; font-size: 12px;"><strong>Status</strong></p>
+            {% if status %}
+                <p style="margin: 5px 0 0 0; font-size: 18px; font-weight: bold; color: #333;">{{ status.status }}</p>
+                {% if status.motivo %}
+                    <p style="margin: 5px 0 0 0; color: #999; font-size: 12px;">Motivo: {{ status.motivo }}</p>
+                {% endif %}
+            {% else %}
+                <p style="margin: 5px 0 0 0; color: #999;">Não informado</p>
+            {% endif %}
+        </div>
+        
+        <div style="padding: 15px; background: #f9f9f9; border-radius: 5px;">
+            <p style="margin: 0; color: #666; font-size: 12px;"><strong>Turmas</strong></p>
+            <p style="margin: 5px 0 0 0; font-size: 18px; font-weight: bold; color: #333;">{{ turmas|length }}</p>
+        </div>
+        
+        {% if frequencia.total %}
+            <div style="padding: 15px; background: #f9f9f9; border-radius: 5px;">
+                <p style="margin: 0; color: #666; font-size: 12px;"><strong>Frequência</strong></p>
+                <p style="margin: 5px 0 0 0; font-size: 18px; font-weight: bold; color: #333;">
+                    {% if frequencia.total > 0 %}
+                        {{ (frequencia.presentes / frequencia.total * 100)|round(1) }}%
+                    {% else %}
+                        0%
+                    {% endif %}
+                </p>
+                <p style="margin: 5px 0 0 0; color: #999; font-size: 12px;">
+                    {{ frequencia.presentes }}/{{ frequencia.total }} presentes
+                </p>
+            </div>
+        {% endif %}
+    </div>
+    
+    <h2>Turmas</h2>
+    {% if turmas %}
+        {% for turma in turmas %}
+            <div style="margin-bottom: 15px; padding: 15px; border: 1px solid #ddd; border-radius: 5px;">
+                <h4 style="margin: 0 0 10px 0;">{{ turma.turma_nome }}</h4>
+                <p style="margin: 5px 0; color: #666; font-size: 14px;">
+                    <strong>Curso:</strong> {{ turma.curso_nome }} | 
+                    <strong>Professor:</strong> {{ turma.professor_nome }}
+                </p>
+            </div>
+        {% endfor %}
+    {% else %}
+        <p style="color: #999;">Nenhuma turma matriculado.</p>
+    {% endif %}
+    
+    <hr style="margin: 30px 0;">
+    
+    <h2>Notas por Módulo</h2>
+    {% if notas %}
+        <table style="width: 100%; border-collapse: collapse;">
+            <thead>
+                <tr style="background: #f5f5f5;">
+                    <th style="padding: 10px; text-align: left; border: 1px solid #ddd;">Turma</th>
+                    <th style="padding: 10px; text-align: left; border: 1px solid #ddd;">Módulo</th>
+                    <th style="padding: 10px; text-align: center; border: 1px solid #ddd;">1ª</th>
+                    <th style="padding: 10px; text-align: center; border: 1px solid #ddd;">2ª</th>
+                    <th style="padding: 10px; text-align: center; border: 1px solid #ddd;">3ª</th>
+                    <th style="padding: 10px; text-align: center; border: 1px solid #ddd;">Média</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for nota in notas %}
+                    <tr style="border: 1px solid #ddd;">
+                        <td style="padding: 10px;">{{ nota.turma_nome }}</td>
+                        <td style="padding: 10px;">{{ nota.modulo_nome }}</td>
+                        <td style="padding: 10px; text-align: center;">{{ nota.primeira_nota }}</td>
+                        <td style="padding: 10px; text-align: center;">{{ nota.segunda_nota }}</td>
+                        <td style="padding: 10px; text-align: center;">{{ nota.terceira_nota }}</td>
+                        <td style="padding: 10px; text-align: center;">
+                            <strong>{{ "%.1f"|format(nota.media_final) }}</strong>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p style="color: #999;">Nenhuma nota registrada.</p>
+    {% endif %}
+    
+    <hr style="margin: 30px 0;">
+    
+    <h2>Relatórios</h2>
+    {% if relatorios %}
+        {% for relatorio in relatorios %}
+            <div style="margin-bottom: 15px; padding: 15px; background: #f5f5f5; border-left: 4px solid #667eea; border-radius: 5px;">
+                <h4 style="margin: 0 0 8px 0;">{{ relatorio.titulo }}</h4>
+                <p style="margin: 0; color: #999; font-size: 12px;">{{ relatorio.data_criacao }}</p>
+                <div style="margin-top: 10px; font-size: 14px; line-height: 1.6;">{{ relatorio.conteudo }}</div>
+            </div>
+        {% endfor %}
+    {% else %}
+        <p style="color: #999;">Nenhum relatório registrado.</p>
+    {% endif %}
+    
+    <div style="margin-top: 30px;">
+        <a href="/aluno/{{ aluno.id }}/anexos" class="btn" style="background: #17a2b8; color: white; padding: 10px 20px; border-radius: 5px; text-decoration: none; display: inline-block; margin-right: 10px;">
+            📎 Ver Anexos
+        </a>
+        <a href="/relatorios/historico/{{ aluno.id }}" class="btn" style="background: #28a745; color: white; padding: 10px 20px; border-radius: 5px; text-decoration: none; display: inline-block;">
+            📜 Histórico Completo
+        </a>
+    </div>
+</div>
+{% endblock %}

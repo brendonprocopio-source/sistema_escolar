@@ -1,0 +1,135 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - Sistema de Gestão Escolar{% endblock %}
+
+{% block content %}
+<div class="card">
+    <h1>Dashboard - {% if tipo_usuario == 'aluno' %}Aluno{% elif tipo_usuario == 'professor' %}Professor{% else %}Funcionário{% endif %}</h1>
+    
+    {% if tipo_usuario == 'aluno' %}
+        <div class="dashboard-grid">
+            <div class="stat-card">
+                <h3>Turmas Matriculado</h3>
+                <div class="value">{{ turmas | length }}</div>
+            </div>
+        </div>
+        
+        <h2>Minhas Turmas</h2>
+        {% if turmas %}
+            <table>
+                <thead>
+                    <tr>
+                        <th>Curso</th>
+                        <th>Turma</th>
+                        <th>Professor</th>
+                        <th>Horário</th>
+                        <th>Ação</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for turma in turmas %}
+                        <tr>
+                            <td>{{ turma.curso_nome }}</td>
+                            <td>{{ turma.nome }}</td>
+                            <td>{{ turma.professor_nome }}</td>
+                            <td>{{ turma.horario }}</td>
+                            <td>
+                                <a href="/aluno/{{ usuario_id }}" class="btn-small">
+                                    <button class="btn-small">Ver Detalhes</button>
+                                </a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% elif tipo_usuario == 'admin' %}
+        <h1>Painel de Administrador</h1>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin: 20px 0;">
+            <a href="/admin" style="text-decoration: none;"><button style="background: #28a745;">🏠 Admin Dashboard</button></a>
+            <a href="/admin/funcionarios" style="text-decoration: none;"><button>👤 Gerenciar Funcionarios</button></a>
+            <a href="/admin/cursos" style="text-decoration: none;"><button>📚 Gerenciar Cursos</button></a>
+            <a href="/admin/modulos" style="text-decoration: none;"><button>📖 Gerenciar Modulos</button></a>
+            <a href="/admin/setores" style="text-decoration: none;"><button>🏢 Gerenciar Setores</button></a>
+            <a href="/admin/usuarios" style="text-decoration: none;"><button>🔐 Gerenciar Usuarios</button></a>
+            <a href="/turmas" style="text-decoration: none;"><button>👥 Gerenciar Turmas</button></a>
+            <a href="/alunos" style="text-decoration: none;"><button>📋 Gerenciar Alunos</button></a>
+            <a href="/relatorios" style="text-decoration: none;"><button>📊 Relatorios</button></a>
+        </div>
+    
+    {% else %}
+            <p>Você não está matriculado em nenhuma turma.</p>
+        {% endif %}
+    
+    {% elif tipo_usuario == 'professor' %}
+        <div class="dashboard-grid">
+            <div class="stat-card">
+                <h3>Turmas Lecionando</h3>
+                <div class="value">{{ turmas | length }}</div>
+            </div>
+        </div>
+        
+        <h2>Minhas Turmas</h2>
+        {% if turmas %}
+            <table>
+                <thead>
+                    <tr>
+                        <th>Turma</th>
+                        <th>Curso</th>
+                        <th>Total de Alunos</th>
+                        <th>Horário</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for turma in turmas %}
+                        <tr>
+                            <td>{{ turma.nome }}</td>
+                            <td>{{ turma.curso_nome }}</td>
+                            <td>{{ turma.total_alunos }}</td>
+                            <td>{{ turma.horario }}</td>
+                            <td>
+                                <button class="btn-small">
+                                    <a href="/turma/{{ turma.id }}/frequencia" style="color: white; text-decoration: none;">Frequência</a>
+                                </button>
+                                <button class="btn-small">
+                                    <a href="/turma/{{ turma.id }}/notas" style="color: white; text-decoration: none;">Notas</a>
+                                </button>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <p>Você não está lecionando nenhuma turma.</p>
+        {% endif %}
+    
+    {% else %}
+        <div class="dashboard-grid">
+            <div class="stat-card">
+                <h3>Total de Alunos</h3>
+                <div class="value">0</div>
+            </div>
+            <div class="stat-card">
+                <h3>Total de Turmas</h3>
+                <div class="value">0</div>
+            </div>
+            <div class="stat-card">
+                <h3>Total de Professores</h3>
+                <div class="value">0</div>
+            </div>
+            <div class="stat-card">
+                <h3>Total de Cursos</h3>
+                <div class="value">0</div>
+            </div>
+        </div>
+        
+        <h2>Menu de Gestão</h2>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px;">
+            <a href="/alunos" style="text-decoration: none;"><button>👥 Gerenciar Alunos</button></a>
+            <a href="/turmas" style="text-decoration: none;"><button>📚 Gerenciar Turmas</button></a>
+            <a href="/turma/nova" style="text-decoration: none;"><button>➕ Nova Turma</button></a>
+            <a href="/relatorios" style="text-decoration: none;"><button>📊 Relatórios</button></a>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

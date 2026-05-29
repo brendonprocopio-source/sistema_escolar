@@ -1,0 +1,260 @@
+╔════════════════════════════════════════════════════════════════════════════════╗
+║                                                                                ║
+║                  📦 GUIA COMPLETO DE BACKUP E ARMAZENAMENTO                   ║
+║                                                                                ║
+║               Como salvar seu projeto para não perder NUNCA MAIS              ║
+║                                                                                ║
+╚════════════════════════════════════════════════════════════════════════════════╝
+
+
+════════════════════════════════════════════════════════════════════════════════
+                         ⚠️ FAÇA ISSO AGORA! ⚠️
+════════════════════════════════════════════════════════════════════════════════
+
+Você tem um projeto COMPLETO rodando em Docker. Para não perder:
+
+PASSO 1: Copie a pasta (5 minutos)
+   → Copie: tmp\school_system\
+   → Cole em: C:\Users\brend\Desktop\school_system_backup\
+
+PASSO 2: Faça backup do banco (2 minutos)
+   → Copie: tmp\school_system\escola.db
+   → Cole em: C:\Users\brend\Desktop\
+
+PASSO 3: Crie conta GitHub (5 minutos)
+   → Vá para: https://github.com/signup
+   → Crie conta gratuita
+   → Crie repositório "school_system"
+
+PASSO 4: Sincronize (10 minutos)
+   → Siga instruções em: GITHUB_SETUP.txt
+   → Seu código estará seguro na nuvem
+
+
+════════════════════════════════════════════════════════════════════════════════
+                         🗂️ LOCAIS DE ARMAZENAMENTO
+════════════════════════════════════════════════════════════════════════════════
+
+1. DESKTOP (LOCAL RÁPIDO)
+   └─ C:\Users\brend\Desktop\school_system_backup\
+      • Acesso rápido
+      • Fácil encontrar
+      • ⚠️ Se formatar PC, perde!
+
+2. NUVEM - Google Drive (RECOMENDADO)
+   └─ Novo → Pasta → school_system
+      → Faça upload de todos os arquivos
+      • Acesso de qualquer lugar
+      • Automático com Google Drive app
+      • Sincronização em tempo real
+      • ✅ Bem seguro
+
+3. NUVEM - OneDrive (ALTERNATIVA)
+   └─ Sincronize pasta local automaticamente
+      • Integrado com Windows
+      • Automático
+      • Fácil de usar
+      • ✅ Bem seguro
+
+4. GITHUB (MELHOR PARA CÓDIGO)
+   └─ https://github.com/SEU_USER/school_system
+      • Histórico de mudanças
+      • Controle de versão
+      • Compartilhar com equipe
+      • ✅ Muito seguro
+
+5. PEN DRIVE (BACKUP FÍSICO)
+   └─ E:\ → Copie escola_backup.zip
+      • Leve para casa/trabalho
+      • Backup offline
+      • ✅ Seguro se não perder
+      • ⚠️ Pode estragar
+
+
+════════════════════════════════════════════════════════════════════════════════
+                      🚀 CAMINHO RÁPIDO (RECOMENDADO)
+════════════════════════════════════════════════════════════════════════════════
+
+HOJE (30 minutos):
+
+1. Abra Explorer
+   → Navegue para: tmp\school_system\
+   → Selecione tudo (Ctrl+A)
+   → Copie (Ctrl+C)
+
+2. Cole no Desktop
+   → Clique direito em Desktop
+   → Colar
+   → Aguarde a cópia terminar
+
+3. Faça zip (para segurança)
+   → Clique direito em school_system_backup
+   → Enviar para → Pasta compactada
+   → Renomeie para: school_system_backup_[data].zip
+
+4. Envie para Google Drive
+   → Abra drive.google.com
+   → Clique em "Novo" → "Pasta"
+   → Nome: school_system
+   → Clique direito em school_system_backup.zip
+   → "Enviar para" → Google Drive
+
+PRONTO! Seu projeto está seguro! 🎉
+
+
+════════════════════════════════════════════════════════════════════════════════
+                      📋 SCRIPTS DE BACKUP DISPONÍVEIS
+════════════════════════════════════════════════════════════════════════════════
+
+Existem 2 scripts prontos para usar:
+
+1. backup.bat
+   └─ Clique duplo para fazer backup automático
+   └─ Cria ZIP com data e hora
+   └─ Salva em: C:\Users\brend\Desktop\school_system_backups\
+
+2. exportar_dados.bat
+   └─ Clique duplo para exportar dados do banco como CSV
+   └─ Cria: export_alunos.csv, export_turmas.csv, etc.
+   └─ Salva em: tmp\school_system\
+
+
+════════════════════════════════════════════════════════════════════════════════
+                      🔐 ARQUIVOS CRÍTICOS
+════════════════════════════════════════════════════════════════════════════════
+
+NUNCA PERDER:
+
+1. escola.db (O BANCO DE DADOS!)
+   └─ Contém TODOS os dados
+   └─ Alunos, turmas, notas, frequência
+   └─ Faça backup a cada dia!
+
+2. app.py
+   └─ Código da aplicação
+   └─ Se perder, pode recriar do GitHub
+
+3. docker-compose.yml + Dockerfile
+   └─ Configuração do container
+   └─ Necessário para rodar novamente
+
+4. templates/ (pasta inteira)
+   └─ Interface web
+   └─ Importante para funcionar
+
+
+════════════════════════════════════════════════════════════════════════════════
+                      📊 DADOS QUE VOCÊ JÁ TEM
+════════════════════════════════════════════════════════════════════════════════
+
+No banco de dados (escola.db) estão:
+
+✓ 3 Cursos cadastrados
+✓ 4 Módulos
+✓ 3 Turmas
+✓ 4 Alunos
+✓ 3 Professores
+✓ Frequência de 15 aulas
+✓ Notas de múltiplos módulos
+✓ Usuários e configurações
+
+PERDE TUDO SE NÃO FAZER BACKUP!
+
+
+════════════════════════════════════════════════════════════════════════════════
+                      🆘 RECUPERAR SE PERDER
+════════════════════════════════════════════════════════════════════════════════
+
+Se formatar o PC ou perder os arquivos:
+
+1. Do GitHub:
+   git clone https://github.com/SEU_USER/school_system.git
+   cd school_system
+   docker-compose up -d
+
+2. Do Google Drive:
+   → Abra Google Drive
+   → Clique em school_system_backup.zip
+   → Download
+   → Extraia
+   → Abra pasta
+   → Duplo-clique em docker-compose.yml
+   → Aguarde iniciar
+
+3. Do ZIP local:
+   → Abra school_system_backup.zip
+   → Extraia
+   → Mesmos passos acima
+
+
+════════════════════════════════════════════════════════════════════════════════
+                      ✅ CHECKLIST FINAL
+════════════════════════════════════════════════════════════════════════════════
+
+□ Copiei pasta inteira para Desktop
+□ Copiei banco de dados (escola.db)
+□ Criei pasta no Google Drive
+□ Fiz upload dos arquivos
+□ Criei conta GitHub
+□ Fiz push do projeto
+□ Fiz ZIP de backup
+□ Testei restaurar do backup (é seguro!)
+□ Anotei todas as credenciais
+
+
+════════════════════════════════════════════════════════════════════════════════
+                      🔑 CREDENCIAIS (GUARDE!)
+════════════════════════════════════════════════════════════════════════════════
+
+Admin do Sistema:
+   Email: admin@escola.com
+   Senha: Mudar@123
+
+GitHub (se usar):
+   User: [SEU_USER]
+   Token: [GERE EM settings → Developer settings]
+
+Google Drive:
+   Email: [SEU_EMAIL]
+   Senha: [SUA_SENHA]
+
+
+════════════════════════════════════════════════════════════════════════════════
+                      📞 PRÓXIMOS PASSOS
+════════════════════════════════════════════════════════════════════════════════
+
+1. Faça backup AGORA (não deixe para depois!)
+2. Configure GitHub (controle de versão é importante)
+3. Sincronize com nuvem (segurança)
+4. Continue desenvolvendo o sistema
+5. Faça backup regularmente (semanal é bom)
+
+O projeto está MUITO BOM! Não deixe perder!
+
+
+════════════════════════════════════════════════════════════════════════════════
+                      🎯 RESUMO DOS 4 PASSOS ESSENCIAIS
+════════════════════════════════════════════════════════════════════════════════
+
+1. COPIAR (30 segundos):
+   └─ tmp\school_system → C:\Users\brend\Desktop\
+
+2. COMPACTAR (1 minuto):
+   └─ school_system_backup → ZIP
+
+3. NUVEM (2 minutos):
+   └─ Faça upload para Google Drive
+
+4. GITHUB (5 minutos):
+   └─ Faça push dos arquivos
+
+PRONTO! Seu projeto está 100% seguro! 🛡️
+
+
+════════════════════════════════════════════════════════════════════════════════
+
+⚠️ FAÇA AGORA! NÃO ESPERE PARA AMANHÃ!
+
+Quanto mais rápido você fizer backup, menos risco de perder!
+
+════════════════════════════════════════════════════════════════════════════════

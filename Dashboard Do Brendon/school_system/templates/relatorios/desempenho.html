@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+
+{% block title %}Relatório de Desempenho - Sistema de Gestão Escolar{% endblock %}
+
+{% block content %}
+<div class="card">
+    <h1>Relatório de Desempenho</h1>
+    
+    {% if dados %}
+        <table>
+            <thead>
+                <tr>
+                    <th>Aluno</th>
+                    <th>Turma</th>
+                    <th>Módulo</th>
+                    <th>1ª Nota</th>
+                    <th>2ª Nota</th>
+                    <th>3ª Nota</th>
+                    <th>Média Final</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in dados %}
+                    <tr>
+                        <td>{{ item.nome }}</td>
+                        <td>{{ item.turma }}</td>
+                        <td>{{ item.modulo }}</td>
+                        <td>{{ item.primeira_nota }}</td>
+                        <td>{{ item.segunda_nota }}</td>
+                        <td>{{ item.terceira_nota }}</td>
+                        <td><strong>{{ item.media_final }}</strong></td>
+                        <td>
+                            <span class="badge {% if item.media_final >= 7 %}badge-success{% else %}badge-danger{% endif %}">
+                                {% if item.media_final >= 7 %}Aprovado{% else %}Reprovado{% endif %}
+                            </span>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>Nenhum dado de desempenho encontrado.</p>
+    {% endif %}
+    
+    <div style="margin-top: 20px;">
+        <a href="/relatorios" style="text-decoration: none;"><button class="secondary">← Voltar</button></a>
+    </div>
+</div>
+{% endblock %}

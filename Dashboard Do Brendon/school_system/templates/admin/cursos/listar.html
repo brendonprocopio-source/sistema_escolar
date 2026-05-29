@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+
+{% block title %}Gerenciar Cursos - Admin{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
+        <h1>Gerenciar Cursos</h1>
+        <a href="/admin/curso/novo" style="text-decoration: none;"><button>+ Novo Curso</button></a>
+    </div>
+    
+    {% if cursos %}
+        <table>
+            <thead>
+                <tr>
+                    <th>Nome</th>
+                    <th>Descricao</th>
+                    <th>Duracao (meses)</th>
+                    <th>Valor (R$)</th>
+                    <th>Turmas</th>
+                    <th>Acoes</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for curso in cursos %}
+                    <tr>
+                        <td>{{ curso.nome }}</td>
+                        <td>{{ curso.descricao[:50] }}...</td>
+                        <td>{{ curso.duracao_meses }}</td>
+                        <td>{{ "%.2f"|format(curso.valor or 0) }}</td>
+                        <td><span class="badge badge-primary">{{ curso.total_turmas }}</span></td>
+                        <td>
+                            <a href="/admin/curso/{{ curso.id }}/editar" style="text-decoration: none;"><button class="btn-small">Editar</button></a>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>Nenhum curso cadastrado.</p>
+    {% endif %}
+</div>
+{% endblock %}

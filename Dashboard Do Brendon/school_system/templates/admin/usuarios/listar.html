@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+
+{% block title %}Gerenciar Usuarios - Admin{% endblock %}
+
+{% block content %}
+<div class="card">
+    <h1>Gerenciar Usuarios</h1>
+    
+    {% if usuarios %}
+        <table>
+            <thead>
+                <tr>
+                    <th>Email</th>
+                    <th>Tipo</th>
+                    <th>Status</th>
+                    <th>Criacao</th>
+                    <th>Acoes</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for usuario in usuarios %}
+                    <tr>
+                        <td>{{ usuario.email }}</td>
+                        <td><span class="badge badge-primary">{{ usuario.tipo_usuario }}</span></td>
+                        <td>
+                            {% if usuario.ativo %}
+                                <span class="badge badge-success">Ativo</span>
+                            {% else %}
+                                <span class="badge badge-danger">Inativo</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ usuario.data_criacao }}</td>
+                        <td>
+                            {% if usuario.ativo %}
+                                <form method="POST" action="/admin/usuario/{{ usuario.id }}/desativar" style="display: inline;">
+                                    <button type="submit" class="btn-small">Desativar</button>
+                                </form>
+                            {% else %}
+                                <form method="POST" action="/admin/usuario/{{ usuario.id }}/ativar" style="display: inline;">
+                                    <button type="submit" class="btn-small">Ativar</button>
+                                </form>
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>Nenhum usuario cadastrado.</p>
+    {% endif %}
+</div>
+{% endblock %}

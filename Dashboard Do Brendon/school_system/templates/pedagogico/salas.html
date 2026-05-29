@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+
+{% block title %}Salas - Pedagógico{% endblock %}
+
+{% block content %}
+<div class="card">
+    <h1>Salas de Aula</h1>
+    
+    {% if salas %}
+        <table style="width: 100%; border-collapse: collapse;">
+            <thead>
+                <tr style="background: #f5f5f5;">
+                    <th style="padding: 15px; text-align: left; border: 1px solid #ddd;">Código</th>
+                    <th style="padding: 15px; text-align: left; border: 1px solid #ddd;">Sala</th>
+                    <th style="padding: 15px; text-align: center; border: 1px solid #ddd;">Capacidade</th>
+                    <th style="padding: 15px; text-align: left; border: 1px solid #ddd;">Recursos</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for sala in salas %}
+                    <tr style="border: 1px solid #ddd;">
+                        <td style="padding: 15px;"><strong>{{ sala.codigo }}</strong></td>
+                        <td style="padding: 15px;">{{ sala.nome }}</td>
+                        <td style="padding: 15px; text-align: center;">{{ sala.capacidade }}</td>
+                        <td style="padding: 15px;">
+                            {% if sala.recursos %}
+                                {{ sala.recursos }}
+                            {% else %}
+                                -
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p style="color: #999;">Nenhuma sala cadastrada.</p>
+        <p style="background: #f0f0f0; padding: 15px; border-radius: 5px; margin-top: 20px;">
+            Para adicionar salas, acesse o admin > Salas
+        </p>
+    {% endif %}
+</div>
+{% endblock %}

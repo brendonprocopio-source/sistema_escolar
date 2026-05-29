@@ -1,0 +1,327 @@
+════════════════════════════════════════════════════════════════════════════════
+            GUIA DE INTEGRAÇÃO - BACKEND REFATORADO v3.0
+              Sistema de Gestão Escolar com Hierarquia de Permissões
+════════════════════════════════════════════════════════════════════════════════
+
+Este documento descreve como integrar os módulos criados ao app.py existente.
+
+════════════════════════════════════════════════════════════════════════════════
+                    📋 ARQUIVOS CRIADOS E SUAS RESPONSABILIDADES
+════════════════════════════════════════════════════════════════════════════════
+
+1. database_refactored.py
+   └─ Schema otimizado com relacionamentos corretos
+   └─ Elimina duplicação de cursos
+   └─ Hierarquia de permissões (RBAC)
+   └─ Tabelas: Usuários unificados, Roles, Matrículas, Parcelas, etc
+
+2. controle_acesso.py
+   └─ PermissaoManager: verifica permissões por role
+   └─ ControladorAcesso: interface centralizada de acesso
+   └─ Decorators: @requer_permissao, @requer_roles, @requer_autenticacao
+
+3. logica_financeira.py
+   └─ GeradorParcelas: cria automaticamente parcelas na matrícula
+   └─ Cálculo de receita, pendentes e inadimplência
+   └─ Registra pagamentos com data e método
+   └─ RangerFinanceiro: relatórios diários e mensais
+
+4. logica_academica.py
+   └─ GerenciadorFrequencia: registro de chamada por aula
+   └─ GerenciadorNotas: registro de notas e cálculo de média
+   └─ GerenciadorObservacoes: observações e histórico do aluno
+   └─ Consolidação de histórico completo
+
+════════════════════════════════════════════════════════════════════════════════
+                    ⚙️ COMO INTEGRAR AO app.py EXISTENTE
+════════════════════════════════════════════════════════════════════════════════
+
+PASSO 1: IMPORTS NO INÍCIO DO app.py
+────────────────────────────────────────────────────────────────────────────────
+
+from controle_acesso import (
+    PermissaoManager, ControladorAcesso, 
+    requer_autenticacao
+)
+from logica_financeira import GeradorParcelas, RangerFinanceiro
+from logica_academica import (
+    GerenciadorFrequencia, GerenciadorNotas, GerenciadorObservacoes
+)
+
+
+PASSO 2: MODIFICAR ROTA DE LOGIN PARA INCLUIR ROLE
+────────────────────────────────────────────────────────────────────────────────
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    if request.method == 'POST':
+        email = request.form.get('email')
+        senha = request.form.get('senha')
+        
+        conexao = get_db()
+        cursor = conexao.cursor()
+        
+        cursor.execute('''
+        SELECT u.id, u.email, u.tipo_usuario, r.nome as role, s.nome as setor
+        FROM usuarios u
+        LEFT JOIN roles r ON u.role_id = r.id
+        LEFT JOIN setores s ON u.setor_id = s.id
+        WHERE u.email = ?
+        ''', (email,))
+        
+        usuario = cursor.fetchone()
+        conexao.close()
+        
+        if usuario:
+            # Verificar senha (integrar com autenticacao_standalone.py)
+            user_dict = dict(usuario)
+            
+            session['usuario_id'] = user_dict['id']
+            session['email'] = user_dict['email']
+            session['usuario_role'] = user_dict['role']  # NOVO
+            session['usuario_setor'] = user_dict['setor']  # NOVO
+            
+            flash(f'Bem-vindo, {user_dict["email"]}!', 'success')
+            return redirect('/dashboard')
+    
+    return render_template('login.html')
+
+
+PASSO 3: MODIFICAR DASHBOARD PARA MOSTRAR DADOS CORRETOS POR ROLE
+────────────────────────────────────────────────────────────────────────────────
+
+@app.route('/dashboard')
+@requer_autenticacao
+def dashboard():
+    conexao = get_db()
+    role = session.get('usuario_role')
+    usuario_id = session.get('usuario_id')
+    
+    # Calcular receita e pendentes (sincronizar)
+    receita_mes = GeradorParcelas.calcular_receita_mes(conexao)
+    pendentes_total = GeradorParcelas.calcular_pendentes_totais(conexao)
+    
+    # Dados específicos por role
+    if role == 'aluno':
+        alunos_visiveis = ControladorAcesso.alunos_visiveis(role, usuario_id, conexao)
+    elif role == 'professor':
+        turmas_visiveis = ControladorAcesso.turmas_visiveis(role, usuario_id, conexao)
+    else:
+        # Admin/Diretoria/Comercial/Pedagogo veem tudo
+        pass
+    
+    conexao.close()
+    
+    return render_template('dashboard.html',
+                         receita_mes=receita_mes,
+                         pendentes_total=pendentes_total,
+                         role=role)
+
+
+PASSO 4: NOVA ROTA PARA CRIAR MATRÍCULA COM PARCELAS AUTOMÁTICAS
+────────────────────────────────────────────────────────────────────────────────
+
+@app.route('/matricula/nova', methods=['GET', 'POST'])
+@PermissaoManager.requer_permissao('matriculas:criar')
+def nova_matricula():
+    if request.method == 'POST':
+        aluno_id = request.form.get('aluno_id')
+        turma_id = request.form.get('turma_id')
+        quantidade_parcelas = int(request.form.get('quantidade_parcelas', 1))
+        
+        conexao = get_db()
+        
+        try:
+            cursor = conexao.cursor()
+            
+            # Obter valor do curso
+            cursor.execute('''
+            SELECT c.valor_total FROM cursos c
+            JOIN turmas t ON c.id = t.curso_id
+            WHERE t.id = ?
+            ''', (turma_id,))
+            
+            valor_total = cursor.fetchone()[0]
+            
+            # Criar matrícula
+            cursor.execute('''
+            INSERT INTO matriculas (aluno_id, turma_id, data_matricula, valor_total)
+            VALUES (?, ?, ?, ?)
+            ''', (aluno_id, turma_id, date.today(), valor_total))
+            
+            conexao.commit()
+            matricula_id = cursor.lastrowid
+            
+            # AUTOMÁTICO: Gerar parcelas
+            sucesso, mensagem = GeradorParcelas.gerar_parcelas_matricula(
+                conexao, matricula_id, valor_total, quantidade_parcelas
+            )
+            
+            if sucesso:
+                flash(f'✅ Matrícula criada com {quantidade_parcelas} parcelas!', 'success')
+            else:
+                flash(f'⚠️ Matrícula criada mas houve erro nas parcelas: {mensagem}', 'warning')
+            
+        except Exception as e:
+            conexao.rollback()
+            flash(f'❌ Erro: {str(e)}', 'error')
+        finally:
+            conexao.close()
+        
+        return redirect('/matriculas')
+    
+    # GET: Formulário
+    conexao = get_db()
+    alunos = executar_query('SELECT * FROM alunos')
+    turmas = executar_query('SELECT * FROM turmas WHERE ativa = 1')
+    conexao.close()
+    
+    return render_template('matricula/nova.html',
+                         alunos=alunos,
+                         turmas=turmas)
+
+
+PASSO 5: ROTA PARA REGISTRAR FREQUÊNCIA (PROFESSOR)
+────────────────────────────────────────────────────────────────────────────────
+
+@app.route('/turma/<int:turma_id>/frequencia', methods=['GET', 'POST'])
+@PermissaoManager.requer_permissao('frequencia:minhas_turmas')
+def registrar_frequencia(turma_id):
+    if request.method == 'POST':
+        data_aula = request.form.get('data_aula')
+        conexao = get_db()
+        
+        # Pegar presenças do formulário
+        presencas = {}
+        for key, value in request.form.items():
+            if key.startswith('presente_'):
+                matricula_id = int(key.replace('presente_', ''))
+                presencas[matricula_id] = 1  # Se enviou = presente
+        
+        # Registrar
+        sucesso, msg = GerenciadorFrequencia.registrar_frequencia_aula(
+            conexao, turma_id, data_aula, presencas, session.get('usuario_id')
+        )
+        
+        conexao.close()
+        flash(msg, 'success' if sucesso else 'error')
+        return redirect(f'/turma/{turma_id}/frequencia')
+    
+    # GET: Formulário
+    conexao = get_db()
+    presencas = GerenciadorFrequencia.obter_presencas_turma(
+        conexao, turma_id, date.today()
+    )
+    conexao.close()
+    
+    return render_template('turma/frequencia.html',
+                         turma_id=turma_id,
+                         presencas=presencas)
+
+
+PASSO 6: ROTA PARA REGISTRAR NOTAS (PROFESSOR)
+────────────────────────────────────────────────────────────────────────────────
+
+@app.route('/turma/<int:turma_id>/notas', methods=['GET', 'POST'])
+@PermissaoManager.requer_permissao('notas:minhas_turmas')
+def registrar_notas(turma_id):
+    if request.method == 'POST':
+        bimestre = int(request.form.get('bimestre', 1))
+        conexao = get_db()
+        
+        # Iterar sobre alunos
+        cursor = conexao.cursor()
+        cursor.execute('''
+        SELECT m.id as matricula_id FROM matriculas m
+        WHERE m.turma_id = ? AND m.status = 'ativa'
+        ''', (turma_id,))
+        
+        matriculas = cursor.fetchall()
+        
+        for (matricula_id,) in matriculas:
+            nota_1 = float(request.form.get(f'nota_1_{matricula_id}', 0))
+            nota_2 = float(request.form.get(f'nota_2_{matricula_id}', 0))
+            nota_3 = float(request.form.get(f'nota_3_{matricula_id}', 0))
+            
+            GerenciadorNotas.registrar_notas_bimestre(
+                conexao, matricula_id, turma_id, bimestre,
+                nota_1, nota_2, nota_3, session.get('usuario_id')
+            )
+        
+        conexao.close()
+        flash('✅ Notas registradas com sucesso!', 'success')
+        return redirect(f'/turma/{turma_id}/notas')
+    
+    # GET: Formulário
+    conexao = get_db()
+    notas = GerenciadorNotas.obter_notas_turma(conexao, turma_id)
+    conexao.close()
+    
+    return render_template('turma/notas.html',
+                         turma_id=turma_id,
+                         notas=notas)
+
+
+PASSO 7: PERFIL UNIFICADO DO ALUNO (COM HISTÓRICO)
+────────────────────────────────────────────────────────────────────────────────
+
+@app.route('/aluno/<int:aluno_id>/perfil')
+@requer_autenticacao
+def perfil_aluno(aluno_id):
+    conexao = get_db()
+    
+    # Verificar permissão
+    role = session.get('usuario_role')
+    if role == 'aluno' and session.get('usuario_id') != aluno_id:
+        flash('Acesso negado!', 'error')
+        return redirect('/dashboard')
+    
+    # Obter histórico completo
+    historico = GerenciadorObservacoes.obter_historico_aluno(conexao, aluno_id)
+    
+    # Obter extrato financeiro
+    extrato = GeradorParcelas.obter_extrato_financeiro_aluno(conexao, aluno_id)
+    
+    conexao.close()
+    
+    return render_template('aluno/perfil_completo.html',
+                         aluno=historico['aluno'],
+                         frequencia=historico['frequencia'],
+                         notas=historico['notas'],
+                         observacoes=historico['observacoes'],
+                         matriculas=historico['matriculas'],
+                         extrato_financeiro=extrato)
+
+
+════════════════════════════════════════════════════════════════════════════════
+                    🎯 CHECKLIST DE IMPLEMENTAÇÃO
+════════════════════════════════════════════════════════════════════════════════
+
+[ ] 1. Copiar database_refactored.py
+[ ] 2. Copiar controle_acesso.py
+[ ] 3. Copiar logica_financeira.py
+[ ] 4. Copiar logica_academica.py
+[ ] 5. Adicionar imports ao app.py
+[ ] 6. Modificar login para incluir role e setor
+[ ] 7. Modificar dashboard para sincronizar finanças
+[ ] 8. Criar rota /matricula/nova com gerador de parcelas
+[ ] 9. Criar rota /turma/<id>/frequencia
+[ ] 10. Criar rota /turma/<id>/notas
+[ ] 11. Criar rota /aluno/<id>/perfil (histórico unificado)
+[ ] 12. Criar rota para registrar observações
+[ ] 13. Criar rota para marcar pagamentos
+[ ] 14. Testar com cada role (admin, professor, aluno, comercial)
+[ ] 15. Validar sincronização de dados financeiros
+
+════════════════════════════════════════════════════════════════════════════════
+                    📊 FLUXOS FUNCIONAIS GARANTIDOS
+════════════════════════════════════════════════════════════════════════════════
+
+✅ COMERCIAL: Cria aluno → Cria matrícula → Parcelas automáticas
+✅ PROFESSOR: Abre turma → Registra frequência/notas
+✅ PEDAGOGO: Vê histórico → Adiciona observações
+✅ ALUNO: Vê suas notas/frequência/financeiro
+✅ DIRETORIA: Acesso total com relatórios
+✅ FINANCEIRO: Marcar pagamentos → Dashboard sincroniza
+
+════════════════════════════════════════════════════════════════════════════════

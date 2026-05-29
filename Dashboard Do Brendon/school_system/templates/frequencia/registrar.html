@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+
+{% block title %}Registrar Frequência - Sistema de Gestão Escolar{% endblock %}
+
+{% block content %}
+<div class="card">
+    <h1>Registrar Frequência - {{ turma.nome }}</h1>
+    
+    <form method="POST">
+        <div class="form-group">
+            <label for="data_aula">Data da Aula:</label>
+            <input type="date" id="data_aula" name="data_aula" required>
+        </div>
+        
+        <h2>Alunos</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Aluno</th>
+                    <th>Presente</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for aluno in alunos %}
+                    <tr>
+                        <td>{{ aluno.nome }}</td>
+                        <td>
+                            <input type="checkbox" id="presente_{{ aluno.id }}" name="presente_{{ aluno.id }}">
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        
+        <div style="margin-top: 20px;">
+            <button type="submit">Salvar Frequência</button>
+            <a href="/dashboard" style="text-decoration: none;"><button type="button" class="secondary">Cancelar</button></a>
+        </div>
+    </form>
+</div>
+{% endblock %}

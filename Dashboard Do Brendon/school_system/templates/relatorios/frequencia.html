@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+
+{% block title %}Relatório de Frequência - Sistema de Gestão Escolar{% endblock %}
+
+{% block content %}
+<div class="card">
+    <h1>Relatório de Frequência</h1>
+    
+    {% if dados %}
+        <table>
+            <thead>
+                <tr>
+                    <th>Aluno</th>
+                    <th>Turma</th>
+                    <th>Total de Aulas</th>
+                    <th>Presentes</th>
+                    <th>Percentual</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in dados %}
+                    <tr>
+                        <td>{{ item.nome }}</td>
+                        <td>{{ item.turma }}</td>
+                        <td>{{ item.total_aulas }}</td>
+                        <td>{{ item.presentes }}</td>
+                        <td>
+                            <span class="badge {% if item.percentual >= 75 %}badge-success{% else %}badge-danger{% endif %}">
+                                {{ item.percentual }}%
+                            </span>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>Nenhum dado de frequência encontrado.</p>
+    {% endif %}
+    
+    <div style="margin-top: 20px;">
+        <a href="/relatorios" style="text-decoration: none;"><button class="secondary">← Voltar</button></a>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+
+{% block title %}Anexos - Aluno{% endblock %}
+
+{% block content %}
+<div class="card">
+    <h1>Anexos de {{ aluno.nome }}</h1>
+    
+    <div style="margin-bottom: 30px;">
+        <h3>Upload de Arquivo</h3>
+        <form method="POST" action="/aluno/{{ aluno.id }}/anexo/novo" enctype="multipart/form-data" style="max-width: 500px;">
+            <div style="margin-bottom: 15px;">
+                <label style="display: block; margin-bottom: 5px; font-weight: bold;">Tipo:</label>
+                <select name="tipo" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px;">
+                    <option value="foto">Foto</option>
+                    <option value="documento">Documento</option>
+                    <option value="contrato">Contrato</option>
+                    <option value="comprovante">Comprovante</option>
+                    <option value="outro">Outro</option>
+                </select>
+            </div>
+            
+            <div style="margin-bottom: 15px;">
+                <label style="display: block; margin-bottom: 5px; font-weight: bold;">Título:</label>
+                <input type="text" name="titulo" placeholder="Ex: Foto de Perfil" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px;">
+            </div>
+            
+            <div style="margin-bottom: 15px;">
+                <label style="display: block; margin-bottom: 5px; font-weight: bold;">Arquivo:</label>
+                <input type="file" name="arquivo" required style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px;">
+            </div>
+            
+            <button type="submit" style="background: #28a745; color: white; padding: 12px 30px; border: none; border-radius: 5px; cursor: pointer; font-size: 16px;">
+                📤 Enviar
+            </button>
+        </form>
+    </div>
+    
+    <hr style="margin: 30px 0;">
+    
+    <h3>Anexos Cadastrados</h3>
+    
+    {% if anexos %}
+        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 20px;">
+            {% for anexo in anexos %}
+                <div style="border: 1px solid #ddd; border-radius: 8px; padding: 15px; background: #f9f9f9;">
+                    <h4 style="margin: 0 0 10px 0;">{{ anexo.titulo }}</h4>
+                    <p style="margin: 5px 0; color: #666; font-size: 14px;">
+                        <strong>Tipo:</strong> {{ anexo.tipo }}
+                    </p>
+                    <p style="margin: 5px 0; color: #666; font-size: 14px;">
+                        <strong>Arquivo:</strong> {{ anexo.arquivo_nome }}
+                    </p>
+                    <p style="margin: 5px 0; color: #999; font-size: 12px;">
+                        Upload: {{ anexo.data_upload }}
+                    </p>
+                    <a href="{{ anexo.arquivo }}" target="_blank" style="background: #17a2b8; color: white; padding: 8px 15px; border-radius: 3px; text-decoration: none; display: inline-block; margin-top: 10px;">
+                        📥 Baixar
+                    </a>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p style="color: #999;">Nenhum anexo cadastrado.</p>
+    {% endif %}
+</div>
+{% endblock %}

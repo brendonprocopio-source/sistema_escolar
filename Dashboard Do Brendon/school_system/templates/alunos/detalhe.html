@@ -1,0 +1,96 @@
+{% extends "base.html" %}
+
+{% block title %}Detalhes do Aluno - Sistema de Gestão Escolar{% endblock %}
+
+{% block content %}
+<div class="card">
+    <h1>Detalhes do Aluno: {{ aluno.nome }}</h1>
+    
+    <h2>Informações Pessoais</h2>
+    <table>
+        <tr>
+            <th>Matrícula:</th>
+            <td>{{ aluno.matricula }}</td>
+        </tr>
+        <tr>
+            <th>Email:</th>
+            <td>{{ aluno.email }}</td>
+        </tr>
+        <tr>
+            <th>CPF:</th>
+            <td>{{ aluno.cpf }}</td>
+        </tr>
+        <tr>
+            <th>Data de Nascimento:</th>
+            <td>{{ aluno.data_nascimento }}</td>
+        </tr>
+        <tr>
+            <th>Telefone:</th>
+            <td>{{ aluno.telefone }}</td>
+        </tr>
+    </table>
+    
+    <h2>Turmas Matriculado</h2>
+    {% if turmas %}
+        <table>
+            <thead>
+                <tr>
+                    <th>Turma</th>
+                    <th>Curso</th>
+                    <th>Professor</th>
+                    <th>Horário</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for turma in turmas %}
+                    <tr>
+                        <td>{{ turma.nome }}</td>
+                        <td>{{ turma.curso_nome }}</td>
+                        <td>{{ turma.professor_nome }}</td>
+                        <td>{{ turma.horario }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>Aluno não está matriculado em nenhuma turma.</p>
+    {% endif %}
+    
+    <h2>Notas</h2>
+    {% if notas %}
+        <table>
+            <thead>
+                <tr>
+                    <th>Módulo</th>
+                    <th>1ª Nota</th>
+                    <th>2ª Nota</th>
+                    <th>3ª Nota</th>
+                    <th>Média</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for nota in notas %}
+                    <tr>
+                        <td>{{ nota.modulo_nome }}</td>
+                        <td>{{ nota.primeira_nota }}</td>
+                        <td>{{ nota.segunda_nota }}</td>
+                        <td>{{ nota.terceira_nota }}</td>
+                        <td><strong>{{ nota.media_final }}</strong></td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>Nenhuma nota registrada.</p>
+    {% endif %}
+    
+    <h2>Frequência</h2>
+    {% if frequencia %}
+        <p>Total de aulas: <strong>{{ frequencia.total }}</strong></p>
+        <p>Presentes: <strong>{{ frequencia.presentes }}</strong></p>
+        <p>Percentual de presença: <strong>{{ (frequencia.presentes * 100 / frequencia.total) | round(2) }}%</strong></p>
+    {% else %}
+        <p>Sem registros de frequência.</p>
+    {% endif %}
+</div>
+{% endblock %}

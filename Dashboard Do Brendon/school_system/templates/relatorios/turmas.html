@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+
+{% block title %}Relatório de Turmas - Sistema de Gestão Escolar{% endblock %}
+
+{% block content %}
+<div class="card">
+    <h1>Relatório de Turmas</h1>
+    
+    {% if turmas %}
+        <table>
+            <thead>
+                <tr>
+                    <th>Turma</th>
+                    <th>Curso</th>
+                    <th>Professor</th>
+                    <th>Total de Alunos</th>
+                    <th>Capacidade</th>
+                    <th>Taxa de Ocupação</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for turma in turmas %}
+                    <tr>
+                        <td>{{ turma.nome }}</td>
+                        <td>{{ turma.curso_nome }}</td>
+                        <td>{{ turma.professor_nome }}</td>
+                        <td><span class="badge badge-primary">{{ turma.total_alunos }}</span></td>
+                        <td>{{ turma.capacidade }}</td>
+                        <td>
+                            {% if turma.capacidade > 0 %}
+                                {{ ((turma.total_alunos / turma.capacidade) * 100) | round(1) }}%
+                            {% else %}
+                                N/A
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>Nenhuma turma encontrada.</p>
+    {% endif %}
+    
+    <div style="margin-top: 20px;">
+        <a href="/relatorios" style="text-decoration: none;"><button class="secondary">← Voltar</button></a>
+    </div>
+</div>
+{% endblock %}

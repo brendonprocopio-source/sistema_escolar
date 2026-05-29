@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+
+{% block title %}Gerenciar Modulos - Admin{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
+        <h1>Gerenciar Modulos</h1>
+        <a href="/admin/modulo/novo" style="text-decoration: none;"><button>+ Novo Modulo</button></a>
+    </div>
+    
+    {% if modulos %}
+        <table>
+            <thead>
+                <tr>
+                    <th>Curso</th>
+                    <th>Nome</th>
+                    <th>Carga Horaria</th>
+                    <th>Ordem</th>
+                    <th>Acoes</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for modulo in modulos %}
+                    <tr>
+                        <td>{{ modulo.curso_nome }}</td>
+                        <td>{{ modulo.nome }}</td>
+                        <td>{{ modulo.carga_horaria }}h</td>
+                        <td>{{ modulo.ordem }}</td>
+                        <td>
+                            <button class="btn-small">Editar</button>
+                            <button class="btn-small">Deletar</button>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>Nenhum modulo cadastrado.</p>
+    {% endif %}
+</div>
+{% endblock %}

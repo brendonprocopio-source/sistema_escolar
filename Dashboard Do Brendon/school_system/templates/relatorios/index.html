@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+
+{% block title %}Relatórios - Sistema de Gestão Escolar{% endblock %}
+
+{% block content %}
+<div class="card">
+    <h1>Relatórios do Sistema</h1>
+    
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px;">
+        <a href="/relatorio/turmas" style="text-decoration: none;">
+            <div class="stat-card" style="border-left: 4px solid #28a745; cursor: pointer; transition: transform 0.2s;">
+                <h3>📚 Relatório de Turmas</h3>
+                <p>Visualizar todas as turmas, professores e alunos</p>
+            </div>
+        </a>
+        
+        <a href="/relatorio/frequencia" style="text-decoration: none;">
+            <div class="stat-card" style="border-left: 4px solid #17a2b8; cursor: pointer; transition: transform 0.2s;">
+                <h3>👥 Relatório de Frequência</h3>
+                <p>Percentual de presença por aluno e turma</p>
+            </div>
+        </a>
+        
+        <a href="/relatorio/desempenho" style="text-decoration: none;">
+            <div class="stat-card" style="border-left: 4px solid #ffc107; cursor: pointer; transition: transform 0.2s;">
+                <h3>📊 Relatório de Desempenho</h3>
+                <p>Notas e média de cada aluno por módulo</p>
+            </div>
+        </a>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+
+{% block title %}Alunos - Sistema de Gestão Escolar{% endblock %}
+
+{% block content %}
+<div class="card">
+    <h1>Gerenciar Alunos</h1>
+    
+    {% if alunos %}
+        <table>
+            <thead>
+                <tr>
+                    <th>Matrícula</th>
+                    <th>Nome</th>
+                    <th>Email</th>
+                    <th>CPF</th>
+                    <th>Data de Nascimento</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for aluno in alunos %}
+                    <tr>
+                        <td>{{ aluno.matricula }}</td>
+                        <td>{{ aluno.nome }}</td>
+                        <td>{{ aluno.email }}</td>
+                        <td>{{ aluno.cpf }}</td>
+                        <td>{{ aluno.data_nascimento }}</td>
+                        <td>
+                            <a href="/aluno/{{ aluno.id }}" style="text-decoration: none;"><button class="btn-small">👁️ Ver</button></a>
+                            <button class="btn-small">✏️ Editar</button>
+                            <button class="btn-small" onclick="if(confirm('Tem certeza?')) window.location.href='/aluno/{{ aluno.id }}/deletar'">🗑️ Deletar</button>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>Nenhum aluno cadastrado.</p>
+    {% endif %}
+</div>
+{% endblock %}

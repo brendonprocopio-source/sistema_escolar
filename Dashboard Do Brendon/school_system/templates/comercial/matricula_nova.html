@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+
+{% block title %}Nova Matrícula - Comercial{% endblock %}
+
+{% block content %}
+<div class="card">
+    <h1>Nova Matrícula</h1>
+    
+    <form method="POST" style="max-width: 500px;">
+        <div style="margin-bottom: 20px;">
+            <label style="display: block; margin-bottom: 5px; font-weight: bold;">Aluno:</label>
+            <select name="aluno_id" required style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px;">
+                <option value="">-- Selecione --</option>
+                {% for aluno in alunos %}
+                    <option value="{{ aluno.id }}">{{ aluno.nome }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        
+        <div style="margin-bottom: 20px;">
+            <label style="display: block; margin-bottom: 5px; font-weight: bold;">Turma:</label>
+            <select name="turma_id" required style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px;">
+                <option value="">-- Selecione --</option>
+                {% for turma in turmas %}
+                    <option value="{{ turma.id }}">{{ turma.nome }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        
+        <div style="margin-bottom: 20px;">
+            <label style="display: block; margin-bottom: 5px; font-weight: bold;">Valor Total (R$):</label>
+            <input type="number" name="valor_total" step="0.01" required style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px;">
+        </div>
+        
+        <div style="margin-bottom: 20px;">
+            <label style="display: block; margin-bottom: 5px; font-weight: bold;">Número de Parcelas:</label>
+            <select name="parcelas" required style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px;">
+                <option value="1">1x</option>
+                <option value="2">2x</option>
+                <option value="3">3x</option>
+                <option value="6">6x</option>
+                <option value="12">12x</option>
+            </select>
+        </div>
+        
+        <button type="submit" style="background: #28a745; color: white; padding: 12px 30px; border: none; border-radius: 5px; cursor: pointer; font-size: 16px;">
+            Criar Matrícula
+        </button>
+        <a href="/comercial" style="background: #6c757d; color: white; padding: 12px 30px; border-radius: 5px; text-decoration: none; display: inline-block; margin-left: 10px;">
+            Cancelar
+        </a>
+    </form>
+    
+    <div style="margin-top: 40px; padding: 20px; background: #f9f9f9; border-left: 4px solid #667eea; border-radius: 5px;">
+        <h3>Cursos Disponíveis:</h3>
+        <ul>
+            {% for curso in cursos %}
+                <li><strong>{{ curso.nome }}</strong> - R$ {{ curso.valor }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+</div>
+{% endblock %}

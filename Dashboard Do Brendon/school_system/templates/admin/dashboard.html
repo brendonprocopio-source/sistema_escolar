@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+
+{% block title %}Admin Dashboard - Sistema de Gestao Escolar{% endblock %}
+
+{% block content %}
+<div class="card">
+    <h1>Painel de Controle - Administrador</h1>
+    
+    <div class="dashboard-grid">
+        <div class="stat-card">
+            <h3>Total de Alunos</h3>
+            <div class="value">{{ total_alunos }}</div>
+        </div>
+        
+        <div class="stat-card">
+            <h3>Total de Professores</h3>
+            <div class="value">{{ total_professores }}</div>
+        </div>
+        
+        <div class="stat-card">
+            <h3>Total de Funcionarios</h3>
+            <div class="value">{{ total_funcionarios }}</div>
+        </div>
+        
+        <div class="stat-card">
+            <h3>Total de Turmas</h3>
+            <div class="value">{{ total_turmas }}</div>
+        </div>
+        
+        <div class="stat-card">
+            <h3>Total de Cursos</h3>
+            <div class="value">{{ total_cursos }}</div>
+        </div>
+        
+        <div class="stat-card">
+            <h3>Receita Total</h3>
+            <div class="value">R$ {{ "%.2f"|format(receita_total) }}</div>
+        </div>
+    </div>
+    
+    <h2>Menu de Gerenciamento</h2>
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin: 20px 0;">
+        <a href="/admin/funcionarios" style="text-decoration: none;"><button>👤 Gerenciar Funcionarios</button></a>
+        <a href="/admin/cursos" style="text-decoration: none;"><button>📚 Gerenciar Cursos</button></a>
+        <a href="/admin/modulos" style="text-decoration: none;"><button>📖 Gerenciar Modulos</button></a>
+        <a href="/admin/setores" style="text-decoration: none;"><button>🏢 Gerenciar Setores</button></a>
+        <a href="/admin/usuarios" style="text-decoration: none;"><button>🔐 Gerenciar Usuarios</button></a>
+        <a href="/turmas" style="text-decoration: none;"><button>👥 Gerenciar Turmas</button></a>
+        <a href="/alunos" style="text-decoration: none;"><button>📋 Gerenciar Alunos</button></a>
+        <a href="/relatorios" style="text-decoration: none;"><button>📊 Relatorios</button></a>
+    </div>
+    
+    <h2>Ultimas Matriculas</h2>
+    {% if ultimas_matriculas %}
+        <table>
+            <thead>
+                <tr>
+                    <th>Aluno</th>
+                    <th>Turma</th>
+                    <th>Data</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for matricula in ultimas_matriculas %}
+                    <tr>
+                        <td>{{ matricula.nome }}</td>
+                        <td>{{ matricula.turma }}</td>
+                        <td>{{ matricula.data_matricula }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>Nenhuma matricula recente.</p>
+    {% endif %}
+</div>
+{% endblock %}
