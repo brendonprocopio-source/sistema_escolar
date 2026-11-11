@@ -1,0 +1,11 @@
+services:
+  escola:
+    build: .
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./dados:/dados          # banco, anexos e chave ficam aqui (faça backup desta pasta)
+    environment:
+      NOME_ESCOLA: "Gestão Escolar"
+      # ADMIN_SENHA: "defina-uma-senha"   # opcional; sem isso, a senha inicial aparece no log
+    restart: unless-stopped
