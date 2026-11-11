@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+{% block titulo %}{{ titulo }}{% endblock %}
+{% block conteudo %}
+<div class="top"><div><a class="voltar" href="/relatorios">← Relatórios</a><h1>{{ titulo }}</h1><span class="muted">{{ descricao }} {{ linhas|length }} linha(s).</span></div>
+  <div class="acoes"><button class="btn" type="button" onclick="window.print()">Imprimir</button><a class="btn" href="?formato=csv">Baixar CSV</a></div></div>
+<div class="card flush">
+{% if linhas %}<div class="rolagem"><table>
+  <thead><tr>{% for c in colunas %}<th class="{{ 'num' if c[2] == 'brl' }}">{{ c[1] }}</th>{% endfor %}</tr></thead>
+  <tbody>{% for l in linhas %}<tr>{% for c in colunas %}{% set v = l[c[0]] %}
+    <td class="{{ 'num' if c[2] == 'brl' }}">{% if c[2] == 'brl' %}{{ v|brl }}{% elif c[2] == 'data' %}{{ v|data }}{% else %}{{ v if v is not none else '—' }}{% endif %}</td>{% endfor %}</tr>{% endfor %}
+  {% if soma is not none %}<tr><td colspan="{{ colunas|length - 1 }}"><b>Total</b></td><td class="num"><b>{{ soma|brl }}</b></td></tr>{% endif %}
+  </tbody></table></div>
+{% else %}<div class="vazio">Sem dados para este relatório.</div>{% endif %}
+</div>
+{% endblock %}

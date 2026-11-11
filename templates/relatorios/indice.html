@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+{% block titulo %}Relatórios{% endblock %}
+{% block conteudo %}
+<div class="top"><h1>Relatórios</h1></div>
+<div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(250px,1fr))">
+  {% for nome, r in relatorios.items() %}
+  <div class="card" style="margin:0"><h2>{{ r[0] }}</h2><p class="muted">{{ r[1] }}</p>
+    <a class="btn" href="/relatorios/{{ nome }}">Abrir</a> <a class="btn" href="/relatorios/{{ nome }}?formato=csv">Baixar CSV</a></div>
+  {% endfor %}
+</div>
+{% if papel == 'admin' %}
+<div class="card"><h2>Cópia de segurança</h2><p class="muted">Baixa uma cópia completa do banco de dados. Guarde em local seguro: o arquivo contém dados pessoais.</p>
+  <form method="post" action="/backup">{{ csrf() }}<button class="btn">Baixar backup do banco</button></form></div>
+{% endif %}
+{% endblock %}
