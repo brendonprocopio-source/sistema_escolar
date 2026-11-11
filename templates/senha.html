@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+{% block titulo %}Trocar senha{% endblock %}
+{% block conteudo %}
+<div class="top"><h1>Trocar senha</h1></div>
+{% if obrigatorio %}<div class="aviso">Você está usando uma senha provisória. Defina uma senha sua para continuar.</div>{% endif %}
+<form class="card" method="post" style="max-width:460px">
+  {{ csrf() }}
+  <p><label for="atual">Senha atual</label><input id="atual" name="atual" type="password" autocomplete="current-password" required autofocus></p>
+  <p><label for="nova">Nova senha</label><input id="nova" name="nova" type="password" minlength="8" autocomplete="new-password" required>
+    <span class="ajuda">Mínimo de 8 caracteres, com letras e números.</span></p>
+  <p><label for="confirmar">Repita a nova senha</label><input id="confirmar" name="confirmar" type="password" autocomplete="new-password" required></p>
+  <button class="btn pri">Salvar senha</button>
+</form>
+{% endblock %}

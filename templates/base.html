@@ -1,0 +1,37 @@
+{% import '_macros.html' as m %}<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{% block titulo %}{{ escola }}{% endblock %} · {{ escola }}</title>
+<link rel="stylesheet" href="/static/app.css">
+</head>
+<body>
+{% if papel %}
+<div class="app">
+  <aside class="side">
+    <div class="brand"><span>{{ m.icone('cap') }}</span>{{ escola }}</div>
+    <nav>
+      {% for rotulo, url, ic, _ in menu %}
+      <a href="{{ url }}" class="{{ 'on' if request.path == url or request.path.startswith(url ~ '/') }}">{{ m.icone(ic) }}{{ rotulo }}</a>
+      {% endfor %}
+    </nav>
+    <div class="eu">
+      <b>{{ nome_usuario }}</b>
+      <span>{{ {'admin':'Administrador','funcionario':'Secretaria','professor':'Professor','aluno':'Aluno'}[papel] }}</span><br>
+      <a href="/conta/senha">Trocar senha</a> ·
+      <form method="post" action="/logout" style="display:inline">{{ csrf() }}<button>Sair</button></form>
+    </div>
+  </aside>
+  <main>
+    <button class="btn menu-btn" data-menu type="button">{{ m.icone('menu') }} Menu</button>
+    {% include '_avisos.html' %}
+    {% block conteudo %}{% endblock %}
+  </main>
+</div>
+{% else %}
+<div class="entrada"><div>{% include '_avisos.html' %}{% block entrada %}{% endblock %}</div></div>
+{% endif %}
+<script src="/static/app.js" defer></script>
+</body>
+</html>

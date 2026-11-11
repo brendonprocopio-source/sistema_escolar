@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+{% block titulo %}Criar conta{% endblock %}
+{% block entrada %}
+<form class="card" method="post" action="/cadastro">
+  {{ csrf() }}
+  <div class="brand"><span>{{ m.icone('cap') }}</span>Criar conta de aluno</div>
+  <div class="campo"><label>Nome completo</label><input name="nome" value="{{ f.nome }}" required></div>
+  <div class="campo"><label>E-mail</label><input name="email" type="email" value="{{ f.email }}" required></div>
+  <div class="campo"><label>CPF</label><input name="cpf" value="{{ f.cpf }}" inputmode="numeric" required></div>
+  <div class="campo"><label>Telefone</label><input name="telefone" type="tel" value="{{ f.telefone }}"></div>
+  <div class="campo"><label>Nascimento</label><input name="data_nascimento" type="date" value="{{ f.data_nascimento }}"></div>
+  <div class="campo"><label>Senha</label><input name="senha" type="password" minlength="8" autocomplete="new-password" required>
+    <div class="ajuda">Mínimo de 8 caracteres, com letras e números.</div></div>
+  <button class="btn pri">Criar conta</button>
+  <p class="small muted" style="margin:14px 0 0;text-align:center"><a href="/login">Já tenho conta</a></p>
+</form>
+{% endblock %}

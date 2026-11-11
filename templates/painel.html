@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+{% block titulo %}Painel{% endblock %}
+{% block conteudo %}
+<div class="top"><div><h1>Olá, {{ nome_usuario.split(' ')[0] }}</h1><span class="muted">{{ hoje|data }}</span></div>
+  {% if gestao %}<div class="acoes"><a class="btn" href="/alunos/novo">{{ m.icone('plus') }} Aluno</a><a class="btn pri" href="/matriculas/nova">{{ m.icone('plus') }} Matrícula</a></div>{% endif %}
+</div>
+
+{% if papel == 'professor' %}
+<div class="cols">
+  <div class="card flush"><h2>Minhas turmas</h2>
+    {% if turmas %}<div class="rolagem"><table>
+      <thead><tr><th>Turma</th><th>Horário</th><th>Alunos</th><th></th></tr></thead>
+      <tbody>{% for t in turmas %}<tr>
+        <td><a href="/turmas/{{ t.id }}"><b>{{ t.nome }}</b></a><br><span class="muted small">{{ t.curso }}</span></td>
+        <td>{{ t.horario or '—' }}</td><td>{{ t.alunos }}</td>
+        <td class="acoes"><a class="btn mini" href="/turmas/{{ t.id }}/frequencia">Chamada</a> <a class="btn mini" href="/turmas/{{ t.id }}/notas">Notas</a></td>
+      </tr>{% endfor %}</tbody></table></div>
+    {% else %}<div class="vazio">Nenhuma turma ativa atribuída a você.</div>{% endif %}
+  </div>
+  {% include '_agenda.html' %}
+</div>
+
+{% else %}
+<div class="grid">
+  <div class="stat"><small>Alunos ativos</small><b>{{ n.alunos }}</b><div class="sub">{{ n.matriculas_mes }} matrícula(s) este mês</div></div>
+  <div class="stat"><small>Turmas ativas</small><b>{{ n.turmas }}</b><div class="sub">{{ n.professores }} professor(es)</div></div>
+  <div class="stat"><small>Recebido no mês</small><b>{{ n.recebido_mes|brl }}</b><div class="sub">{{ n.a_receber|brl }} a receber</div></div>
+  <div class="stat {{ 'bad' if n.atrasado }}"><small>Em atraso</small><b>{{ n.atrasado|brl }}</b><div class="sub">{{ n.n_atrasadas }} parcela(s) vencida(s)</div></div>
+</div>
+<div class="cols">
+  <div class="card"><h2>Recebimentos — últimos 6 meses</h2>
+    <div class="barras">{% for rot, v, pc in receita %}<div><b>{{ (v|brl)[3:-3] if v else '' }}</b><i style="height:{{ pc }}%"></i>{{ rot }}</div>{% endfor %}</div></div>
+  <div class="card"><h2>Matrículas — últimos 6 meses</h2>
+    <div class="barras">{% for rot, v, pc in matriculas %}<div><b>{{ v or '' }}</b><i style="height:{{ pc }}%"></i>{{ rot }}</div>{% endfor %}</div></div>
+  <div class="card"><h2>Situação dos alunos</h2>
+    {% if situacoes %}<div class="linhas-barra">{% for rot, v, pc in situacoes %}<div>{{ rot }}<span><i style="width:{{ pc }}%"></i></span><b class="num">{{ v }}</b></div>{% endfor %}</div>
+    {% else %}<p class="muted">Nenhum aluno cadastrado ainda.</p>{% endif %}</div>
+  <div class="card"><h2>Parcelas vencidas ou vencendo em 7 dias</h2>
+    {% if vencendo %}<ul class="lista">{% for p in vencendo %}
+      <li><span><a href="/alunos/{{ p.aluno_id }}">{{ p.aluno }}</a><br><span class="small {{ 'muted' if p.data_vencimento >= hoje }}" {% if p.data_vencimento < hoje %}style="color:var(--bad)"{% endif %}>{{ 'venceu em' if p.data_vencimento < hoje else 'vence em' }} {{ p.data_vencimento|data }}</span></span><b class="num">{{ p.valor_parcela|brl }}</b></li>
+    {% endfor %}</ul><p style="margin:10px 0 0"><a href="/financeiro">Ver financeiro →</a></p>
+    {% else %}<p class="muted">Nada vencendo nos próximos dias.</p>{% endif %}</div>
+  {% include '_agenda.html' %}
+</div>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,7 @@
+<div class="card"><h2>Próximos eventos</h2>
+  {% if agenda %}<ul class="lista">{% for e in agenda %}
+    <li><span><b>{{ e.titulo }}</b><br><span class="muted small">{{ e.turma }}{% if e.local %} · {{ e.local }}{% endif %}</span></span>
+      <span class="num small">{{ e.data_evento|data }}{% if e.hora_inicio %}<br>{{ e.hora_inicio[:5] }}{% endif %}</span></li>
+  {% endfor %}</ul>
+  {% else %}<p class="muted">Nenhum evento agendado.{% if gestao %} <a href="/cronograma/novo">Adicionar</a>{% endif %}</p>{% endif %}
+</div>
