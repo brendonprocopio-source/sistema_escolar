@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+{% block titulo %}{{ turma.nome }}{% endblock %}
+{% block conteudo %}
+<div class="top">
+  <div><a class="voltar" href="{{ '/turmas' if gestao else '/painel' }}">← {{ 'Turmas' if gestao else 'Painel' }}</a>
+    <h1>{{ turma.nome }}{% if not turma.ativa %} {{ m.selo('Inativo') }}{% endif %}</h1>
+    <span class="muted">{{ turma.codigo }} · {{ turma.curso }}</span></div>
+  <div class="acoes">
+    {% if gestao %}<a class="btn" href="/turmas/{{ turma.id }}/editar">Editar</a>{% endif %}
+    <a class="btn" href="/turmas/{{ turma.id }}/notas">Lançar notas</a>
+    <a class="btn pri" href="/turmas/{{ turma.id }}/frequencia">Fazer chamada</a></div>
+</div>
+<div class="card"><dl class="dados">
+  <div><dt>Professor</dt><dd>{{ turma.professor }}</dd></div>
+  <div><dt>Horário</dt><dd>{{ turma.horario or '—' }}</dd></div>
+  <div><dt>Sala</dt><dd>{{ turma.sala or '—' }}</dd></div>
+  <div><dt>Período</dt><dd>{{ turma.data_inicio|data }} a {{ turma.data_fim|data }}</dd></div>
+  <div><dt>Ocupação</dt><dd>{{ alunos|length }}{% if turma.capacidade %} de {{ turma.capacidade }} vagas{% else %} aluno(s){% endif %}</dd></div>
+</dl></div>
+<div class="cols" style="grid-template-columns:minmax(0,2fr) minmax(260px,1fr)">
+  <div class="card flush"><h2>Alunos</h2>
+    {% if alunos %}<div class="rolagem"><table>
+      <thead><tr><th>Aluno</th><th>Frequência</th><th class="num">Média</th></tr></thead>
+      <tbody>{% for a in alunos %}<tr>
+        <td><a href="/alunos/{{ a.aluno_id }}"><b>{{ a.nome }}</b></a><br><span class="muted small">{{ a.matricula }}</span></td>
+        <td>{{ m.freq(a.presencas, a.aulas, minimo) }}</td>
+        <td class="num">{% if a.media is not none %}<span class="selo {{ 'ok' if a.media >= media_min else 'bad' }}">{{ a.media|nota }}</span>{% else %}—{% endif %}</td>
+      </tr>{% endfor %}</tbody></table></div>
+    {% else %}<div class="vazio">Nenhum aluno matriculado.{% if gestao %} <a href="/matriculas/nova">Fazer matrícula</a>{% endif %}</div>{% endif %}
+  </div>
+  <div class="card"><h2>Últimas chamadas</h2>
+    {% if aulas %}<ul class="lista">{% for a in aulas %}
+      <li><a href="/turmas/{{ turma.id }}/frequencia?data={{ a.data_aula }}">{{ a.data_aula|data }}</a><span class="muted">{{ a.presentes }} de {{ a.total }} presentes</span></li>
+    {% endfor %}</ul>{% else %}<p class="muted">Nenhuma chamada registrada.</p>{% endif %}
+  </div>
+</div>
+{% endblock %}

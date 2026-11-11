@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+{% block titulo %}Notas · {{ turma.nome }}{% endblock %}
+{% block conteudo %}
+<div class="top"><div><a class="voltar" href="/turmas/{{ turma.id }}">← {{ turma.nome }}</a><h1>Notas</h1></div></div>
+{% if not modulos %}
+<div class="card vazio">O curso “{{ turma.curso }}” ainda não tem módulos. {% if papel == 'admin' %}<a href="/modulos/novo">Cadastrar módulo</a>{% else %}Peça à administração para cadastrá-los.{% endif %}</div>
+{% else %}
+<div class="barra abas">{% for mo in modulos %}<a class="{{ 'on' if mo.id == modulo_id }}" href="?modulo={{ mo.id }}">{{ mo.nome }}</a>{% endfor %}</div>
+{% if alunos %}
+<form method="post">
+  {{ csrf() }}<input type="hidden" name="modulo" value="{{ modulo_id }}">
+  <div class="card flush"><div class="rolagem"><table>
+    <thead><tr><th>Aluno</th><th>1ª nota</th><th>2ª nota</th><th>3ª nota</th><th class="num">Média</th></tr></thead>
+    <tbody>{% for a in alunos %}{% set n = lancado.get(a.matricula_id) %}<tr>
+      <td><b>{{ a.nome }}</b></td>
+      {% for i, col in ((1,'primeira_nota'),(2,'segunda_nota'),(3,'terceira_nota')) %}
+      <td><input class="nota" name="n{{ i }}_{{ a.matricula_id }}" inputmode="decimal" aria-label="{{ i }}ª nota de {{ a.nome }}"
+           value="{{ request.form.get('n' ~ i ~ '_' ~ a.matricula_id, n[col] if n and n[col] is not none else '') }}"></td>{% endfor %}
+      <td class="num">{% if n and n.media_final is not none %}<span class="selo {{ 'ok' if n.media_final >= media_min else 'bad' }}">{{ n.media_final|nota }}</span>{% else %}—{% endif %}</td>
+    </tr>{% endfor %}</tbody></table></div></div>
+  <div class="barra"><button class="btn pri">Salvar notas</button><span class="muted small">Notas de 0 a 10. A média considera as notas já lançadas.</span></div>
+</form>
+{% else %}<div class="card vazio">Esta turma ainda não tem alunos matriculados.</div>{% endif %}
+{% endif %}
+{% endblock %}

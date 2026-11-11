@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+{% block titulo %}Chamada · {{ turma.nome }}{% endblock %}
+{% block conteudo %}
+<div class="top"><div><a class="voltar" href="/turmas/{{ turma.id }}">← {{ turma.nome }}</a><h1>Chamada</h1></div></div>
+<form class="barra" method="get">
+  <label for="data" style="margin:0">Data da aula</label>
+  <input id="data" type="date" name="data" value="{{ dia }}" max="{{ hoje }}" style="max-width:170px">
+  <button class="btn">Abrir</button>
+  {% if lancado %}<span class="selo ok">Chamada já lançada — você está editando</span>{% endif %}
+</form>
+{% if alunos %}
+<form method="post">
+  {{ csrf() }}<input type="hidden" name="data" value="{{ dia }}">
+  <div class="card flush"><div class="rolagem"><table>
+    <thead><tr><th style="width:90px">Presente</th><th>Aluno</th><th>Justificativa (se faltou)</th></tr></thead>
+    <tbody>{% for a in alunos %}{% set f = lancado.get(a.matricula_id) %}<tr>
+      <td><input type="checkbox" name="p_{{ a.matricula_id }}" id="p_{{ a.matricula_id }}" {{ 'checked' if not f or f.presente }}></td>
+      <td><label for="p_{{ a.matricula_id }}" style="margin:0;font-weight:500">{{ a.nome }}</label></td>
+      <td><input name="j_{{ a.matricula_id }}" value="{{ f.justificativa or '' if f else '' }}" aria-label="Justificativa de {{ a.nome }}" maxlength="200"></td>
+    </tr>{% endfor %}</tbody></table></div></div>
+  <div class="barra"><button class="btn pri">Salvar chamada</button><button class="btn" type="button" data-todos>Marcar / desmarcar todos</button></div>
+</form>
+{% else %}<div class="card vazio">Esta turma ainda não tem alunos matriculados.</div>{% endif %}
+{% endblock %}
