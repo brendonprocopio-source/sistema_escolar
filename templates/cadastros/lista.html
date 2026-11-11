@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+{% block titulo %}{{ cfg.titulo }}{% endblock %}
+{% block conteudo %}
+<div class="top"><div><h1>{{ cfg.titulo }}</h1><span class="muted">{{ total }} registro(s)</span></div>
+  <div class="acoes"><a class="btn pri" href="/{{ slug }}/novo">{{ m.icone('plus') }} Novo {{ cfg.singular }}</a></div></div>
+<form class="barra" method="get">
+  <input type="search" name="q" value="{{ q }}" placeholder="Buscar…" aria-label="Buscar">
+  {% if inativos %}<input type="hidden" name="ver" value="inativos">{% endif %}
+  <button class="btn">Buscar</button>
+  {% if cfg.ativo %}<span class="abas" style="margin-left:auto">
+    <a class="{{ 'on' if not inativos }}" href="/{{ slug }}">Ativos</a>
+    <a class="{{ 'on' if inativos }}" href="/{{ slug }}?ver=inativos">Inativos</a></span>{% endif %}
+</form>
+<div class="card flush">
+{% if linhas %}
+<div class="rolagem"><table>
+  <thead><tr>{% for col in cfg.colunas %}<th>{{ col[1] }}</th>{% endfor %}<th></th></tr></thead>
+  <tbody>
+  {% for l in linhas %}<tr>
+    {% for col in cfg.colunas %}{% set v = l[col[0]] %}{% set fmt = col[2] if col|length > 2 %}
+    <td>{% if loop.first and cfg.detalhe %}<a href="{{ cfg.detalhe.format(id=l.id) }}"><b>{{ v }}</b></a>
+        {%- elif fmt == 'brl' %}{{ v|brl }}{% elif fmt == 'data' %}{{ v|data }}{% elif fmt == 'selo' %}{{ m.selo(v) }}
+        {%- elif loop.first %}<b>{{ v }}</b>{% else %}{{ v if v is not none and v != '' else '—' }}{% endif %}</td>
+    {% endfor %}
+    <td class="acoes">
+      <a class="btn mini" href="/{{ slug }}/{{ l.id }}/editar">Editar</a>
+      <form method="post" action="/{{ slug }}/{{ l.id }}/alternar"
+            data-confirma="{{ 'Reativar' if inativos else ('Desativar' if cfg.ativo else 'Excluir') }} este {{ cfg.singular }}?">
+        {{ csrf() }}<input type="hidden" name="voltar" value="{{ request.full_path }}">
+        <button class="btn mini {{ '' if inativos else 'perigo' }}">{{ 'Reativar' if inativos else ('Desativar' if cfg.ativo else 'Excluir') }}</button>
+      </form>
+    </td>
+  </tr>{% endfor %}
+  </tbody>
+</table></div>
+{{ m.paginacao(pagina, paginas, '/' ~ slug ~ '?q=' ~ q|urlencode ~ ('&ver=inativos' if inativos else '') ~ '&') }}
+{% else %}
+<div class="vazio">{% if q %}Nada encontrado para “{{ q }}”.{% elif inativos %}Nenhum registro inativo.{% else %}Nenhum {{ cfg.singular }} cadastrado ainda. <a href="/{{ slug }}/novo">Cadastrar o primeiro</a>.{% endif %}</div>
+{% endif %}
+</div>
+{% endblock %}

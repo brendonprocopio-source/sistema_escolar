@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+{% block titulo %}{{ 'Editar' if id else 'Novo' }} {{ cfg.singular }}{% endblock %}
+{% block conteudo %}
+<div class="top"><div><a class="voltar" href="/{{ slug }}">← {{ cfg.titulo }}</a><h1>{{ 'Editar' if id else 'Novo' }} {{ cfg.singular }}</h1></div></div>
+<form class="card form" method="post" novalidate>
+  {{ csrf() }}
+  {% for c in cfg.campos %}{% set val = v.get(c.nome) if v.get(c.nome) is not none else '' %}
+  <div class="{{ 'largo' if c.largo }}">
+    <label for="f_{{ c.nome }}">{{ c.rotulo }}{% if c.obrig %} <i>*</i>{% endif %}</label>
+    {% if c.tipo == 'select' %}
+    <select id="f_{{ c.nome }}" name="{{ c.nome }}" {{ 'required' if c.obrig }}>
+      <option value="">— selecione —</option>
+      {% for valor, rot in opcoes[c.nome] %}<option value="{{ valor }}" {{ 'selected' if valor|string == val|string }}>{{ rot }}</option>{% endfor %}
+    </select>
+    {% elif c.tipo == 'textarea' %}
+    <textarea id="f_{{ c.nome }}" name="{{ c.nome }}">{{ val }}</textarea>
+    {% else %}
+    <input id="f_{{ c.nome }}" name="{{ c.nome }}" value="{{ val }}" {{ 'required' if c.obrig }}
+      {% if c.tipo in ('email','tel','date','time') %}type="{{ c.tipo }}"
+      {% elif c.tipo == 'int' %}type="number" min="0" step="1"
+      {% elif c.tipo == 'money' %}type="number" min="0" step="0.01"
+      {% elif c.tipo == 'cpf' %}type="text" inputmode="numeric" maxlength="14" placeholder="000.000.000-00"
+      {% else %}type="text" {% if c.opcoes %}list="l_{{ c.nome }}"{% endif %}{% endif %}>
+    {% if c.tipo == 'text' and c.opcoes %}<datalist id="l_{{ c.nome }}">{% for valor, rot in opcoes[c.nome] %}<option value="{{ valor }}">{% endfor %}</datalist>{% endif %}
+    {% endif %}
+    {% if c.ajuda %}<div class="ajuda">{{ c.ajuda }}</div>{% endif %}
+  </div>
+  {% endfor %}
+  <div class="fim"><button class="btn pri">Salvar</button><a class="btn" href="/{{ slug }}">Cancelar</a></div>
+  {% if cfg.conta and not id %}<div class="largo ajuda">Ao salvar, o sistema cria a conta de acesso e mostra uma senha provisória, que a pessoa troca no primeiro login.</div>{% endif %}
+</form>
+{% endblock %}
