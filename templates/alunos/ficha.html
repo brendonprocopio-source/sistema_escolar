@@ -1,0 +1,106 @@
+{% extends 'base.html' %}
+{% block titulo %}{{ aluno.nome }}{% endblock %}
+{% block conteudo %}
+<div class="top">
+  <div>{% if gestao %}<a class="voltar" href="/alunos">← Alunos</a>{% endif %}
+    <h1>{{ aluno.nome }} {{ m.selo(situacao.status if situacao else none) }}{% if not aluno.ativo %} {{ m.selo('Inativo') }}{% endif %}</h1>
+    <span class="muted">Matrícula {{ aluno.matricula }}</span></div>
+  {% if gestao %}<div class="acoes">
+    <a class="btn" href="/alunos/{{ aluno.id }}/editar">Editar dados</a>
+    <a class="btn pri" href="/matriculas/nova?aluno_id={{ aluno.id }}">{{ m.icone('plus') }} Matricular</a></div>{% endif %}
+</div>
+
+<div class="card"><h2>Dados</h2>
+  <dl class="dados">
+    <div><dt>E-mail</dt><dd>{{ aluno.email }}</dd></div>
+    <div><dt>Telefone</dt><dd>{{ aluno.telefone or '—' }}</dd></div>
+    <div><dt>Nascimento</dt><dd>{{ aluno.data_nascimento|data }}</dd></div>
+    {% if papel != 'professor' %}<div><dt>CPF</dt><dd>{{ aluno.cpf|cpf }}</dd></div>{% endif %}
+    <div><dt>Responsável</dt><dd>{{ aluno.responsavel or '—' }}{% if aluno.telefone_responsavel %} · {{ aluno.telefone_responsavel }}{% endif %}</dd></div>
+    <div><dt>Endereço</dt><dd>{{ aluno.endereco or '—' }}{% if aluno.cidade %} · {{ aluno.cidade }}{% endif %}{% if aluno.estado %}/{{ aluno.estado }}{% endif %}</dd></div>
+  </dl>
+</div>
+
+<div class="card flush"><h2>Turmas e frequência</h2>
+  {% if turmas %}<div class="rolagem"><table>
+    <thead><tr><th>Turma</th><th>Professor</th><th>Horário</th><th>Desde</th><th>Frequência</th><th>Matrícula</th></tr></thead>
+    <tbody>{% for t in turmas %}<tr>
+      <td>{% if equipe %}<a href="/turmas/{{ t.id }}"><b>{{ t.nome }}</b></a>{% else %}<b>{{ t.nome }}</b>{% endif %}<br><span class="muted small">{{ t.curso }}</span></td>
+      <td>{{ t.professor }}</td><td>{{ t.horario or '—' }}</td><td>{{ t.data_matricula|data }}</td>
+      <td>{{ m.freq(t.presencas, t.aulas, minimo) }}</td><td>{{ m.selo(t.status) }}</td>
+    </tr>{% endfor %}</tbody></table></div>
+  {% else %}<div class="vazio">Ainda sem matrícula em turmas.</div>{% endif %}
+</div>
+
+<div class="card flush"><h2>Boletim</h2>
+  {% if notas %}<div class="rolagem"><table>
+    <thead><tr><th>Turma</th><th>Módulo</th><th class="num">1ª</th><th class="num">2ª</th><th class="num">3ª</th><th class="num">Média</th><th>Resultado</th></tr></thead>
+    <tbody>{% for n in notas %}<tr>
+      <td>{{ n.turma }}</td><td>{{ n.modulo }}</td>
+      {% for x in (n.primeira_nota, n.segunda_nota, n.terceira_nota) %}<td class="num">{{ x|nota if x is not none else '—' }}</td>{% endfor %}
+      <td class="num"><b>{{ n.media_final|nota if n.media_final is not none else '—' }}</b></td>
+      <td>{% if n.media_final is none %}<span class="muted">—</span>{% else %}{{ m.selo('Aprovado' if n.media_final >= media_min else 'Reprovado') }}{% endif %}</td>
+    </tr>{% endfor %}</tbody></table></div>
+  <p class="muted small" style="padding:10px 20px 14px;margin:0">Média mínima {{ media_min }} · frequência mínima {{ minimo }}%.</p>
+  {% else %}<div class="vazio">Nenhuma nota lançada.</div>{% endif %}
+</div>
+
+{% if papel != 'professor' %}
+<div class="card flush"><h2>Financeiro</h2>
+  {% if parcelas %}<div class="rolagem"><table>
+    <thead><tr><th>Turma</th><th>Parcela</th><th>Vencimento</th><th class="num">Valor</th><th>Situação</th><th>Pagamento</th></tr></thead>
+    <tbody>{% for p in parcelas %}<tr>
+      <td>{{ p.turma }}</td><td>{{ p.numero_parcela }}</td><td>{{ p.data_vencimento|data }}</td>
+      <td class="num">{{ p.valor_parcela|brl }}</td>
+      <td>{{ m.selo('Atrasada' if p.status == 'pendente' and p.data_vencimento < hoje else 'Em aberto' if p.status == 'pendente' else p.status|capitalize) }}</td>
+      <td>{% if p.data_pagamento %}{{ p.data_pagamento|data }} · {{ p.metodo_pagamento or '—' }}{% else %}—{% endif %}</td>
+    </tr>{% endfor %}</tbody></table></div>
+  {% if gestao %}<p style="padding:10px 20px 14px;margin:0"><a href="/financeiro?ver=todas&q={{ aluno.nome|urlencode }}">Receber parcelas deste aluno →</a></p>{% endif %}
+  {% else %}<div class="vazio">Nenhuma cobrança registrada.</div>{% endif %}
+</div>
+{% endif %}
+
+{% if equipe %}
+<div class="cols">
+  <div class="card" id="observacoes"><h2>Observações pedagógicas</h2>
+    <form method="post" action="/alunos/{{ aluno.id }}/observacao" style="margin-bottom:14px">
+      {{ csrf() }}
+      <p><input name="titulo" placeholder="Título" aria-label="Título" maxlength="120" required></p>
+      <p><textarea name="conteudo" placeholder="Escreva a observação…" aria-label="Observação" required></textarea></p>
+      <button class="btn">Registrar observação</button>
+    </form>
+    {% if observacoes %}<ul class="lista">{% for o in observacoes %}
+      <li><span><b>{{ o.titulo }}</b><br>{{ o.conteudo }}<br><span class="muted small">{{ o.data_criacao|datahora }}{% if o.autor %} · {{ o.autor }}{% endif %}</span></span></li>
+    {% endfor %}</ul>{% else %}<p class="muted">Nenhuma observação registrada.</p>{% endif %}
+  </div>
+
+  <div>
+    {% if gestao %}
+    <div class="card"><h2>Situação do aluno</h2>
+      <form method="post" action="/alunos/{{ aluno.id }}/situacao" class="barra" style="margin-bottom:10px">
+        {{ csrf() }}
+        <select name="status" aria-label="Situação" style="max-width:170px">{% for s in status_possiveis %}<option {{ 'selected' if situacao and situacao.status == s }}>{{ s }}</option>{% endfor %}</select>
+        <input name="motivo" placeholder="Motivo (opcional)" aria-label="Motivo" style="flex:1;min-width:140px">
+        <button class="btn">Alterar</button>
+      </form>
+      {% if historico %}<ul class="lista small">{% for h in historico %}
+        <li><span>{{ m.selo(h.status) }} {{ h.motivo or '' }}</span><span class="muted">{{ h.data_atualizacao|data }}</span></li>{% endfor %}</ul>{% endif %}
+    </div>
+    <div class="card" id="anexos"><h2>Anexos</h2>
+      <form method="post" action="/alunos/{{ aluno.id }}/anexos" enctype="multipart/form-data" style="margin-bottom:14px">
+        {{ csrf() }}
+        <p><input type="file" name="arquivo" aria-label="Arquivo" required></p>
+        <div class="barra"><select name="tipo" aria-label="Tipo" style="max-width:150px">{% for t in ('Documento','Contrato','Foto','Atestado','Outro') %}<option>{{ t }}</option>{% endfor %}</select>
+          <input name="titulo" placeholder="Título (opcional)" aria-label="Título" style="flex:1;min-width:140px"><button class="btn">Anexar</button></div>
+        <div class="ajuda">PDF, imagem ou documento, até 8 MB.</div>
+      </form>
+      {% if anexos %}<ul class="lista">{% for a in anexos %}
+        <li><span><a href="/anexos/{{ a.id }}"><b>{{ a.titulo }}</b></a><br><span class="muted small">{{ a.tipo }} · {{ (a.arquivo_tamanho / 1024)|round|int }} KB · {{ a.data_upload|data }}</span></span>
+          <form method="post" action="/anexos/{{ a.id }}/excluir" data-confirma="Excluir este anexo?">{{ csrf() }}<button class="btn mini perigo">Excluir</button></form></li>
+      {% endfor %}</ul>{% else %}<p class="muted">Nenhum arquivo anexado.</p>{% endif %}
+    </div>
+    {% endif %}
+  </div>
+</div>
+{% endif %}
+{% endblock %}
