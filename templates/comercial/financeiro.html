@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+{% block titulo %}Financeiro{% endblock %}
+{% block conteudo %}
+<div class="top"><h1>Financeiro</h1><div class="acoes"><a class="btn" href="/relatorios/inadimplencia">Inadimplência</a><a class="btn" href="/relatorios/recebimentos">Recebimentos</a></div></div>
+<div class="grid">
+  <div class="stat"><small>Recebido neste mês</small><b>{{ resumo.recebido_mes|brl }}</b></div>
+  <div class="stat"><small>A receber</small><b>{{ resumo.a_receber|brl }}</b></div>
+  <div class="stat {{ 'bad' if resumo.atrasado }}"><small>Em atraso</small><b>{{ resumo.atrasado|brl }}</b></div>
+</div>
+<form class="barra" method="get">
+  <input type="hidden" name="ver" value="{{ filtro }}">
+  <input type="search" name="q" value="{{ q }}" placeholder="Buscar por aluno ou turma…" aria-label="Buscar"><button class="btn">Buscar</button>
+  <span class="abas" style="margin-left:auto">{% for chave, rot in (('abertas','Em aberto'),('atrasadas','Atrasadas'),('pagas','Pagas'),('todas','Todas')) %}
+    <a class="{{ 'on' if filtro == chave }}" href="?ver={{ chave }}&q={{ q|urlencode }}">{{ rot }}</a>{% endfor %}</span>
+</form>
+<div class="card flush">
+{% if linhas %}<div class="rolagem"><table>
+  <thead><tr><th>Aluno</th><th>Parcela</th><th>Vencimento</th><th class="num">Valor</th><th>Situação</th><th></th></tr></thead>
+  <tbody>{% for p in linhas %}{% set atrasada = p.status == 'pendente' and p.data_vencimento < hoje %}<tr>
+    <td><a href="/alunos/{{ p.aluno_id }}"><b>{{ p.aluno }}</b></a><br><span class="muted small">{{ p.turma }}</span></td>
+    <td>{{ p.numero_parcela }}{% if p.de %} de {{ p.de }}{% endif %}</td><td>{{ p.data_vencimento|data }}</td>
+    <td class="num">{{ p.valor_parcela|brl }}</td>
+    <td>{{ m.selo('Atrasada' if atrasada else 'Em aberto' if p.status == 'pendente' else p.status|capitalize) }}
+      {% if p.data_pagamento %}<br><span class="muted small">{{ p.data_pagamento|data }} · {{ p.metodo_pagamento or '—' }}</span>{% endif %}</td>
+    <td class="acoes">
+      {% if p.status == 'pendente' %}
+      <form method="post" action="/parcelas/{{ p.id }}/pagar">{{ csrf() }}<input type="hidden" name="voltar" value="{{ request.full_path }}">
+        <select name="metodo" aria-label="Forma de pagamento">{% for x in metodos %}<option>{{ x }}</option>{% endfor %}</select>
+        <button class="btn mini pri">Receber</button></form>
+      {% elif p.status == 'pago' and papel == 'admin' %}
+      <form method="post" action="/parcelas/{{ p.id }}/estornar" data-confirma="Estornar este pagamento?">{{ csrf() }}<input type="hidden" name="voltar" value="{{ request.full_path }}">
+        <button class="btn mini perigo">Estornar</button></form>
+      {% endif %}
+    </td>
+  </tr>{% endfor %}</tbody></table></div>
+{{ m.paginacao(pagina, paginas, '?ver=' ~ filtro ~ '&q=' ~ q|urlencode ~ '&') }}
+{% else %}<div class="vazio">Nenhuma parcela neste filtro.</div>{% endif %}
+</div>
+{% endblock %}

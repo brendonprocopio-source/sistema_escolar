@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+{% block titulo %}Nova matrícula{% endblock %}
+{% block conteudo %}
+<div class="top"><div><a class="voltar" href="/matriculas">← Matrículas</a><h1>Nova matrícula</h1></div></div>
+{% if not alunos or not turmas %}
+<div class="card vazio">Para matricular é preciso ter ao menos um <a href="/alunos/novo">aluno</a> e uma <a href="/turmas/novo">turma</a> ativos.</div>
+{% else %}
+<form class="card form" method="post">
+  {{ csrf() }}
+  <div><label for="aluno_id">Aluno <i>*</i></label>
+    <select id="aluno_id" name="aluno_id" required><option value="">— selecione —</option>
+      {% for a in alunos %}<option value="{{ a.id }}" {{ 'selected' if (f.aluno_id or aluno_sel)|string == a.id|string }}>{{ a.nome }} ({{ a.matricula }})</option>{% endfor %}</select></div>
+  <div><label for="turma_id">Turma <i>*</i></label>
+    <select id="turma_id" name="turma_id" data-valores required><option value="">— selecione —</option>
+      {% for t in turmas %}{% set lotada = t.capacidade and t.ocupadas >= t.capacidade %}
+      <option value="{{ t.id }}" data-valor="{{ t.valor or '' }}" {{ 'selected' if f.turma_id|string == t.id|string }} {{ 'disabled' if lotada }}>{{ t.nome }} — {{ t.ocupadas }}{% if t.capacidade %}/{{ t.capacidade }}{% endif %} aluno(s){{ ' (lotada)' if lotada }}</option>{% endfor %}</select></div>
+  <div><label for="valor_total">Valor total (R$) <i>*</i></label>
+    <input id="valor_total" name="valor_total" type="number" min="0" step="0.01" value="{{ f.valor_total }}" required>
+    <div class="ajuda">Preenchido com o valor do curso ao escolher a turma. Use 0 para bolsa integral.</div></div>
+  <div><label for="parcelas">Parcelas <i>*</i></label>
+    <input id="parcelas" name="parcelas" type="number" min="1" max="36" value="{{ f.parcelas or 1 }}" required></div>
+  <div><label for="vencimento">Primeiro vencimento <i>*</i></label>
+    <input id="vencimento" name="vencimento" type="date" value="{{ f.vencimento or vencimento }}" required>
+    <div class="ajuda">As demais parcelas vencem no mesmo dia dos meses seguintes.</div></div>
+  <div class="fim"><button class="btn pri">Matricular</button><a class="btn" href="/matriculas">Cancelar</a></div>
+</form>
+{% endif %}
+{% endblock %}

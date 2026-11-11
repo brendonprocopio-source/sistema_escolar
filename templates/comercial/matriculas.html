@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+{% block titulo %}Matrículas{% endblock %}
+{% block conteudo %}
+<div class="top"><div><h1>Matrículas</h1><span class="muted">{{ linhas|length }} registro(s)</span></div>
+  <div class="acoes"><a class="btn pri" href="/matriculas/nova">{{ m.icone('plus') }} Nova matrícula</a></div></div>
+<form class="barra" method="get"><input type="search" name="q" value="{{ q }}" placeholder="Buscar por aluno ou turma…" aria-label="Buscar"><button class="btn">Buscar</button></form>
+<div class="card flush">
+{% if linhas %}<div class="rolagem"><table>
+  <thead><tr><th>Aluno</th><th>Turma</th><th>Data</th><th>Situação</th><th class="num">Pago / total</th><th></th></tr></thead>
+  <tbody>{% for l in linhas %}<tr>
+    <td><a href="/alunos/{{ l.aluno_id }}"><b>{{ l.aluno }}</b></a></td><td><a href="/turmas/{{ l.turma_id }}">{{ l.turma }}</a></td>
+    <td>{{ l.data_matricula|data }}</td><td>{{ m.selo(l.status) }}</td>
+    <td class="num">{% if l.valor_total is not none %}{{ l.valor_pago|brl }} / {{ l.valor_total|brl }}{% else %}—{% endif %}</td>
+    <td class="acoes">{% if l.status == 'ativa' %}<form method="post" action="/matriculas/{{ l.id }}/cancelar"
+        data-confirma="Cancelar a matrícula de {{ l.aluno }}? As parcelas em aberto serão baixadas.">{{ csrf() }}<button class="btn mini perigo">Cancelar</button></form>{% endif %}</td>
+  </tr>{% endfor %}</tbody></table></div>
+{% else %}<div class="vazio">{% if q %}Nada encontrado para “{{ q }}”.{% else %}Nenhuma matrícula ainda. <a href="/matriculas/nova">Fazer a primeira</a>.{% endif %}</div>{% endif %}
+</div>
+{% endblock %}
