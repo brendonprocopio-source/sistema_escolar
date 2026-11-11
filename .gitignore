@@ -1,0 +1,8 @@
+# Dados reais nunca vao para o repositorio
+dados/
+*.db
+__pycache__/
+*.pyc
+.pytest_cache/
+.venv/
+.env
